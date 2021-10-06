@@ -25,7 +25,7 @@ float roll[] = {134.7};
 
 struct Datapacket {
   int8_t type;
-  int8_t aX;
+  int8_t aX; 
   int8_t aY;
   int8_t aZ;
   int16_t gX;
@@ -92,7 +92,7 @@ void loop(){
 
    if (confirmed){
     senddata();
-    sendemg();
+    //sendemg();
   }
 }
 
@@ -113,7 +113,8 @@ void senddata(){
   packet.checksum = getChecksum(packet);
   Serial.write((uint8_t *)&packet, sizeof(packet));
 
-  delay(10);
+  delay(48);
+  //delay(45);
 }
 
 void sendack() {
@@ -147,7 +148,7 @@ void sendemg() {
   packet.padding_7 = 0;
   packet.checksum = getEmgChecksum(packet);
   Serial.write((uint8_t *)&packet, sizeof(packet));
-  delay(10);
+  delay(1000);
   
 }
 

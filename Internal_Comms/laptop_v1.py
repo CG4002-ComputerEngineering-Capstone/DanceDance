@@ -4,11 +4,13 @@ from datetime import datetime
 import threading
 import struct
 import time
+import csv
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
-BEETLE_0 = "b0:b1:13:2d:b3:1a"
+#BEETLE_0 = "b0:b1:13:2d:b3:1a"
 BEETLE_1 = "b0:b1:13:2d:b4:7d"
-BEETLE_2 = "b0:b1:13:2d:d7:97"
+#BEETLE_2 = "b0:b1:13:2d:d7:97"
+#BEETLE_0 = "b0:b1:13:2d:b4:19"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -16,7 +18,9 @@ Data_Header = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 Reconnect_Header = "####################################################"
 newline = "\n"
 
-address = [BEETLE_0, BEETLE_1, BEETLE_2]
+ 
+csv_time = 0
+address = [BEETLE_1]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}
@@ -24,6 +28,7 @@ disconnect_map = {}
 handshake_map = {}
 start_time = {}
 buffer_map = {} 
+train_data = []
 for i in range(len(address)):
     address_map[address[i]] = i
 
@@ -107,7 +112,7 @@ class MyDelegate(btle.DefaultDelegate):
                 correct_size = False
 
 
-                if size < 20:
+                if size < 20:                
                     if buffer_map[addr] == b"":
                         buffer_map[addr] = packet
                         print(Data_Header)
@@ -127,7 +132,12 @@ class MyDelegate(btle.DefaultDelegate):
                             correct_size = True
                             buffer_map[addr] = b""
                         else:
+                            print("still fragmented")
                             buffer_map[addr] = packet
+                            if(len(buffer_map[addr]) > 20):
+                                buffer_map[addr] =  b""
+            
+
                 else:
                     correct_size = True
 
@@ -148,17 +158,37 @@ class MyDelegate(btle.DefaultDelegate):
                             print(Connect_Header)
                             print(newline)
 
-                    if packet_type == 2 and handshake_map[addr] == True:
+                    elif packet_type == 2 and handshake_map[addr] == True:
                         packet = struct.unpack("<bbbbhhhhhhhh", packet)
-                        print(Data_Header)
-                        print("Receiving data from beetle ID: ", i)
+                        global csv_time
+                        #print(Data_Header)
+                        #print("Receiving data from beetle ID: ", i)
                         if(checksum_imu(packet)):
-                            print("Checksum correct!")
-                        print(packet)
-                        print(Data_Header)
-                        print(newline)
+                            #print("Checksum correct!")
+                            #print(packet)
+                            #print(Data_Header)
+                            #print(newline)
+                            #print(time.time() - csv_time)
+                            #csv_time = time.time()
+                            if (len(train_data) < 3100):
+                                real_data = packet[1:10]
+                                #print("real data:", real_data)
+                                train_data.append(list(real_data))
 
-                    if packet_type == 3 and handshake_map[addr] == True:
+                        elif(not checksum_imu(packet)):
+                            print("WRONG CHECKSUM")
+
+                        if (len(train_data) == 1200):
+                            print("reached CSV")
+                            #print(train_data)
+                            print(type(real_data))
+                            print(time.time() - csv_time)
+                            with open("output.csv", "w", newline="") as f:
+                                writer = csv.writer(f)
+                                writer.writerows(train_data)
+                                            
+
+                    elif packet_type == 3 and handshake_map[addr] == True:
                         packet = struct.unpack("<bhhhhhhhhbh", packet)
                         print(Data_Header)
                         print("Receiving data from beetle ID: ", i)
@@ -167,6 +197,12 @@ class MyDelegate(btle.DefaultDelegate):
                         print(packet)
                         print(Data_Header)
                         print(newline)
+
+                        #print(packet)
+
+                        
+
+
                 
 
 
@@ -214,6 +250,7 @@ class main_thread(threading.Thread):
 
 
     def run(self):
+        global csv_time
         handshake_map[self.beetle.addr] = False
         try:
             self.beetle.setDelegate(MyDelegate(self.beetle.addr))
@@ -222,6 +259,7 @@ class main_thread(threading.Thread):
             #print(global_delegate[self.ID])
             self.handshake()
             if (handshake_map[self.beetle.addr]):
+                csv_time = time.time()
                 start_time[self.beetle.addr] = time.time()
                 while True:
                     if (self.beetle.waitForNotifications(1.0) and not disconnect_map[self.beetle.addr]):
@@ -282,7 +320,7 @@ class main_thread(threading.Thread):
         print(newline)
         
 
-        #two-way handshake
+        #three-way handshake
         if self.beetle.waitForNotifications(2.0):
             handshake_end = time.time()
             #print(handshake_end - handshake_start)
@@ -296,6 +334,8 @@ class main_thread(threading.Thread):
         print(newline)
         print(Reconnect_Header)
         print("Trying reconnection wih Beetle ID: ", self.ID)
+        print(Reconnect_Header)
+        print(newline)
         try:
             self.beetle.connect(self.beetle.addr)
             sleep(5)
