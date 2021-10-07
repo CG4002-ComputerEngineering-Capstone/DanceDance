@@ -4,8 +4,8 @@ import base64
 import time
 
 SECRET_KEY = b'123456789abcdefg'  # 16 byte secret key used for AES
-HOST = '127.0.0.1'  # The server's hostname or IP address
-PORT = 65432        # The port used by the server
+HOST = '137.132.92.127'  # The server's hostname or IP address
+PORT = 8888        # The port used by the server
 
 dummy_message = '#1 2 3|dab|1.87'
 
