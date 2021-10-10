@@ -8,8 +8,8 @@ import globals_
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 BEETLE_0 = "b0:b1:13:2d:b3:1a"
-BEETLE_1 = "b0:b1:13:2d:b4:7d"
-BEETLE_2 = "b0:b1:13:2d:d7:97"
+# BEETLE_1 = "b0:b1:13:2d:b4:7d"
+# BEETLE_2 = "b0:b1:13:2d:d7:97"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -17,7 +17,7 @@ Data_Header = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 Reconnect_Header = "####################################################"
 newline = "\n"
 
-address = [BEETLE_0, BEETLE_1, BEETLE_2]
+address = [BEETLE_0]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}

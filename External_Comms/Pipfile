@@ -7,6 +7,8 @@ name = "pypi"
 pandas = "*"
 pycryptodome = "*"
 sshtunnel = "*"
+bluepy = "*"
+requests = "*"
 
 [dev-packages]
 autopep8 = "*"
