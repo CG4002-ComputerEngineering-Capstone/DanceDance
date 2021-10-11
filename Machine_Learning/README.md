@@ -28,12 +28,12 @@ FFT = time-domain to frequency-domain.
 - t_body_component is the body's angular velocity component [Body_gyro]
 
 #### f_signals: 
-- DC_component: f_signal values having freq between `[-0.3 hz to 0 hz]` and from `[0 hz to 0.3hz]`
-- body_component: f_signal values having freq between` [-10 hz to -0.3 hz)` and from `(0.3 hz to 10 hz] `
+- DC_component: f_signal values having freq between  `[-0.3 hz to 0 hz]`  and from  `[0 hz to 0.3hz]`
+- body_component: f_signal values having freq between  `[-10 hz to -0.3 hz)`  and from  `(0.3 hz to 10 hz] `
 
 
 ### Segmentation 
 
 > The signals are segmented in fixed-width sliding windows of `2 sec` with an overlap of `50%`. Therefore, each window will have `20 x 2 = 40 samples` in total.
 
-> Each window corresponds to an input vector row. Just by looking at 3-axial acc and 3-axial gyro readings for each sample point in a window, there would be `6 * 40 = 240 cols ` in an input vector row. This vector can then be fed into the Multi-Layer Perceptron model for prediction. 
+> Each window corresponds to an input vector row. Just by looking at 3-axial acc and 3-axial gyro readings for each sample point in a window, there would be `6 * 40 = 240 cols` in an input vector row. This vector can then be fed into the Multi-Layer Perceptron model for prediction. 
