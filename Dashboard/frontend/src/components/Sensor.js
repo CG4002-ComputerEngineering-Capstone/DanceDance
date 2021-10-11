@@ -7,18 +7,14 @@ import LineChart from "./LineChart";
 import Queue from "./Queue";
 
 const defaultSensorData = {
-  accelLeft: [],
-  accelRight: [],
-  gyroLeft: [],
-  gyroRight: []
+  accelerometer: [],
+  gyroscope: []
 }
 
 var sensorData = defaultSensorData;
 
-var accelLeft = new Queue();
-var accelRight = new Queue();
-var gyroLeft = new Queue();
-var gyroRight = new Queue();
+var accelerometer = new Queue();
+var gyroscope = new Queue();
 
 function Sensor({isPaused, dancerNum}) {
   const GetSensor = useCallback(async (collectionName) => {
@@ -29,17 +25,13 @@ function Sensor({isPaused, dancerNum}) {
       if (data) {
         const formatted = (
           {
-            accelLeft: data.accelLeft,
-            accelRight: data.accelRight,
-            gyroLeft: data.gyroLeft,
-            gyroRight: data.gyroRight
+            accelerometer: data.accelerometer,
+            gyroscope: data.gyroscope
           }
-        ); 
+        );
         if (JSON.stringify(formatted) !== JSON.stringify(sensorData)) {
-          formatted.accelLeft.forEach(element => accelLeft.enqueue(element));
-          formatted.accelRight.forEach(element => accelRight.enqueue(element));
-          formatted.gyroLeft.forEach(element => gyroLeft.enqueue(element));
-          formatted.gyroRight.forEach(element => gyroRight.enqueue(element));
+          formatted.accelerometer.forEach(element => accelerometer.enqueue(element));
+          formatted.gyroscope.forEach(element => gyroscope.enqueue(element));
           sensorData = formatted;
         }
       }
@@ -57,27 +49,19 @@ function Sensor({isPaused, dancerNum}) {
     } else {
       interval = setInterval(() => {
         GetSensor("Sensor" + dancerNum);
-      }, 1000);
+      }, 500);
     }
     return () => {
       clearInterval(interval);
     };
   }, [isPaused, dancerNum, GetSensor]);
 
-  function getLatestAccelLeft() {
-    return accelLeft.dequeue();
+  function GetLatestAccelerometer() {
+    return accelerometer.dequeue();
   }
 
-  function getLatestAccelRight() {
-    return accelRight.dequeue();
-  }
-
-  function getLatestGyroLeft() {
-    return gyroLeft.dequeue();
-  }
-
-  function getLatestGyroRight() {
-    return gyroRight.dequeue();
+  function GetLatestGyroscope() {
+    return gyroscope.dequeue();
   }
 
   return (
@@ -89,29 +73,17 @@ function Sensor({isPaused, dancerNum}) {
         container
         spacing={3}
       >
-        <Grid item xs={6}>
+        <Grid item xs={8}>
           <Typography align="center">
-            Left Accelerometer
+            Accelerometer
           </Typography>
-          <LineChart getLatestData={getLatestAccelLeft} />
+          <LineChart GetLatestData={GetLatestAccelerometer} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={8}>
           <Typography align="center">
-            Right Accelerometer
+            Gyroscope
           </Typography>
-          <LineChart getLatestData={getLatestAccelRight} />
-        </Grid>
-        <Grid item xs={6}>
-          <Typography align="center">
-            Left Gyroscope
-          </Typography>
-          <LineChart getLatestData={getLatestGyroLeft} />
-        </Grid>
-        <Grid item xs={6}>
-          <Typography align="center">
-            Right Gyroscope
-          </Typography>
-          <LineChart getLatestData={getLatestGyroRight} />
+          <LineChart GetLatestData={GetLatestGyroscope} />
         </Grid>
       </Grid>
     </Container>
