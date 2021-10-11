@@ -86,16 +86,18 @@ class LaptopClient(threading.Thread):
     def run(self):
         self.setup_connection()
         command = self.receive_message()
+        print('received message:', command)
         if command != 'server_ready':
             print('did not rececive "server_ready" from server, exiting..')
             return
-        self.send_message('sync')
-        self.clock_sync()
+        # self.send_message('sync')
+        # self.clock_sync()
         time.sleep(1)
-        for i in range(10):
+        for i in range(100):
             # receive data indicating server is ready
-            print('')
+            print(i)
             data = globals_.dataQueue.get()
+            time.sleep(0.1)
             self.send_message(data)
 
             # timestamp = str(time.time() - self.clock_offset)
@@ -117,6 +119,7 @@ def main():
         print('python client.py [Dancer ID]')
         sys.exit()
     dancerId = int(sys.argv[1])
+    global LOCAL_PORT
     LOCAL_PORT = ports[dancerId - 1]
     client = LaptopClient(dancerId)
     client.start()

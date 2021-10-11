@@ -10,7 +10,7 @@ import { Typography } from "@mui/material";
 const defaultPredictionData = [
   {
     position: [1, 2, 3],
-    move: ["", "", ""],
+    move: ["-", "-", "-"],
     syncDelay: 0
   }
 ];
