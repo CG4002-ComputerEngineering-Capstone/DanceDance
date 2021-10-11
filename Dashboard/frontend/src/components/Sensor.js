@@ -49,7 +49,7 @@ function Sensor({isPaused, dancerNum}) {
     } else {
       interval = setInterval(() => {
         GetSensor("Sensor" + dancerNum);
-      }, 500);
+      }, 1000);
     }
     return () => {
       clearInterval(interval);
@@ -73,13 +73,13 @@ function Sensor({isPaused, dancerNum}) {
         container
         spacing={3}
       >
-        <Grid item xs={8}>
+        <Grid item xs={6}>
           <Typography align="center">
             Accelerometer
           </Typography>
           <LineChart GetLatestData={GetLatestAccelerometer} />
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={6}>
           <Typography align="center">
             Gyroscope
           </Typography>

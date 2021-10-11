@@ -13,7 +13,7 @@ function Dancer({dancerNumber, currentMove}) {
             Dancer {dancerNumber}
           </Typography>
           <Typography align="center" variant="h5">
-            {currentMove === '' ? "-" : currentMove}
+            {currentMove}
           </Typography>
         </CardContent>
     </Card>

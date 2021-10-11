@@ -54,7 +54,7 @@ function LineChart({GetLatestData}) {
             realtime: {
               duration: 8000,
               refresh: 50,
-              delay: 500,
+              delay: 1000,
               pause: false,
               ttl: undefined,
               frameRate: 60,
