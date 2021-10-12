@@ -9,6 +9,8 @@ pycryptodome = "*"
 sshtunnel = "*"
 bluepy = "*"
 requests = "*"
+numpy = "*"
+scipy = "*"
 
 [dev-packages]
 autopep8 = "*"
