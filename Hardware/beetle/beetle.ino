@@ -198,7 +198,7 @@ void loop() {
     if((accX > 0.20 || accX < -0.20) && (accY > 1.10 || accY < 0.90)) {   //  detection of start of dance move
      isDancing = 1;
     } else {
-     if(currentTime > previousIdleTime + 3000) {
+     if(currentTime > previousIdleTime + 2000) {      // go back into idle state if no movement for 2s
        isDancing = 0;
        previousIdleTime = currentTime;
      }
