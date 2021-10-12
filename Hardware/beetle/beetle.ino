@@ -195,7 +195,7 @@ void loop() {
     roll = 0.96 * gyroAngleX + 0.04 * accAngleX;        //  complimentary filter, accelerometer and gyro angle values are combined to remove noise
     pitch = 0.96 * gyroAngleY + 0.04 * accAngleY;
 
-    if((accX > 0.20 || accX < -0.20) && (accY > 1.10 || accY < 0.90)) {   //  detection of start of dance move
+    if((accX > 0.30 || accX < -0.30) && (accY > 1.10 || accY < 0.90)) {   //  detection of start of dance move
      isDancing = 1;
     } else {
      if(currentTime > previousIdleTime + 2000) {      // go back into idle state if no movement for 2s
