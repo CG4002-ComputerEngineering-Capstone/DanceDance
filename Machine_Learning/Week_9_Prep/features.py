@@ -30,9 +30,9 @@ from scipy import fftpack
 
 
 SAMPLING_FREQ = 20 # Hz 
-WINDOW_SIZE = 2 # sec 
-OVERLAP = 20 # 20 steps forward and 20 steps from prev window 
-SEGMENT_SIZE = SAMPLING_FREQ * WINDOW_SIZE # 40 
+WINDOW_SIZE = 1 # sec 
+OVERLAP = 10 # 10 steps forward and 10 steps from prev window 
+SEGMENT_SIZE = SAMPLING_FREQ * WINDOW_SIZE # 20
 FEATURE_COLS_LEN = 12 
 FEATURE_COLS = ['t_body_acc_X','t_body_acc_Y','t_body_acc_Z',
                 't_grav_acc_X','t_grav_acc_Y','t_grav_acc_Z',
@@ -40,17 +40,17 @@ FEATURE_COLS = ['t_body_acc_X','t_body_acc_Y','t_body_acc_Z',
                 't_body_acc_mag','t_grav_acc_mag','t_body_gyro_mag']
 
 
-NYQ = SAMPLING_FREQ / float(2) # Nyquist frequency 
+# NYQ = SAMPLING_FREQ / float(2) # Nyquist frequency 
 CUTOFF = 0.3 
 MAXFREQ = 10 
 
-
-DANCE_MOVES = ["jamesbond", "dab", "mermaid"]
-TRAIN_SUBJECTS = ['chekjun','haritha', 'matthew' ,'nishanth', 'priyan']
 SENSOR_COLS = ["acc_X", "acc_Y", "acc_Z", "gyro_X", "gyro_Y", "gyro_Z", "yaw", "pitch", "roll"]
+COLS_USED = ["acc_X", "acc_Y", "acc_Z", "gyro_X", "gyro_Y", "gyro_Z"]
+ADDITIONAL_COLS = ["subject", "trialNum", "dance"]
+RAW_COLS = ["acc_X", "acc_Y", "acc_Z", "gyro_X", "gyro_Y", "gyro_Z","subject", "trialNum", "dance"]
 
 DANCE_TO_NUM_MAP = {'dab': 0, 'jamesbond': 1, 'mermaid': 2}
-NUM_TO_DANCE_MAP = {0: 'dab', 1: 'jamesbond', 2: 'mermaid'}
+# NUM_TO_DANCE_MAP = {0: 'dab', 1: 'jamesbond', 2: 'mermaid'}
 
 TRAIN_FILEPATH = "./capstone_data/train/*.csv"
 TEST_FILEPATH = "./capstone_data/test/*.csv"
@@ -76,32 +76,35 @@ def load_data_paths(location):
 
 def normaliseData(dframe):
     """
-    Normalize features for training data set (values between 0 and 1). Columns rounded to 4dp after normalisation.
-    Input: raw dframe 
+    Normalize features for data set (values between 0 and 1). Columns rounded to 4dp after normalisation.
+    Input: raw sensor dframe 
     No return value
     """
+    
+    global COLS_USED
+    
     pd.options.mode.chained_assignment = None  # default='warn'
-    for col in dframe.columns:
-        dframe[col] = dframe[col].div(100).round(6) # sensor data was scaled by 100 
+    for col in COLS_USED:
         dframe[col] = dframe[col] / dframe[col].max()
         dframe[col] = dframe[col].round(4)
 
+
+#  - Each filepath corresponds to a diff csv file 
+#  - Each file has 20samples per sec * 60s = 1200 values & each subject does a dance move for 3 trials
+#  - Hence 3600 values per subject for a dance move
+#  - Thus for n dance moves, each subject has 3600 * n values
+#  - With k subjects, the dataset will have k * 3600 * n values 
 
 # In[5]:
 
 
 def gen_rawData(given_filepaths):
     """
-    Generate training and test dataframes from raw sensor data. 
+    Generate training and test dataframes from raw sensor data packaged into dict.
     Input: given_filepaths i.e. filepaths 1D array
     Return: dictionary of raw dfs, with key being {subjectName}_{dance}_{trialNum}
     """
     frames = {}
-    # each filepath corresponds to a diff csv file 
-    # each file has 20 * 60s = 1200 values & each subject does a dance move for 3 times 
-    # hence 3600 values per subject for a dance move 
-    # thus for n dance moves, each subject has 3600 * n values 
-    # with k subjects, the dataset will have k * 3600 * n values 
     for filepath in given_filepaths:
         _, s, subjectName, ext = filepath.split("_")
         _, _, dance = s.split("/")
@@ -110,12 +113,11 @@ def gen_rawData(given_filepaths):
         raw_df.dropna(inplace= True)
         raw_df.drop(["yaw","pitch","roll"], axis=1, inplace=True)
         raw_df.reset_index(drop=True,inplace=True)
-        normaliseData(raw_df)
+        for col in raw_df.columns: 
+            raw_df[col] = raw_df[col].div(100).round(6) # received sensor data was scaled by 100 
         raw_df["subject"] = subjectName
         raw_df["trialNum"] = int(trialNum)
         raw_df["dance"] = dance
-#         print(raw_df.shape)
-#         print(raw_df.head(3))
         frames[f"{subjectName}_{dance}_{trialNum}"] = raw_df
     return frames 
 
@@ -168,7 +170,8 @@ def t_domain_feature_per_signal(t_signal):
     # generate frequencies associated to f_signal complex values
     # frequency values between [-10hz:+10hz]
     freqs = np.array(sp.fftpack.fftfreq(t_signal_length, d = 1/float(SAMPLING_FREQ))) 
-    
+#     print("printing max freq under t_dom_feat_per_sig", freqs.max())
+#     print("printing min freq under t_dom_feat_per_sig", freqs.min())
     f_DC_signal = [] # DC_component in freq domain
     f_body_signal = [] # body component in freq domain 
     f_noise_signal = [] # noise in freq domain
@@ -213,25 +216,26 @@ def t_domain_feature_per_signal(t_signal):
 
 def time_domain_feature_gen(df):
     """
-    For each trial of a dance move by a subject, generate a df containing time domain features.
-    Input : df i.e. df containing 1 min readings of 6 axial data of each trial of a dance move 
-    Return : dframe with 12 cols generated from raw data 
+    Add time domain features to df which contains normalised sensor values.
+    Input : raw df i.e. concatenated complete df with all sensor values after being normalised
+    Return : df with 12 cols appended from feature extraction 
     """    
-    time_sig = {}
+
+    global COLS_USED
     
     # iterate through all six axial signals 
-    for column in df.columns:
+    for column in COLS_USED:
         t_signal = np.array(df[column])
         medfiltered_sig = filter_signal(t_signal)
         
         if 'acc' in column: 
             _,grav_acc,body_acc,_ = t_domain_feature_per_signal(medfiltered_sig) 
-            time_sig['t_body_'+ column] = body_acc
-            time_sig['t_grav_'+ column] = grav_acc 
+            df['t_body_'+ column] = body_acc
+            df['t_grav_'+ column] = grav_acc 
             
         elif 'gyro' in column: 
             _,_,body_gyro,_ = t_domain_feature_per_signal(medfiltered_sig)
-            time_sig['t_body_gyro_'+ column[-1]] = body_gyro
+            df['t_body_gyro_'+ column[-1]] = body_gyro
     
     
     # all 9 axial signals generated above are reordered to facilitate find magnitude
@@ -240,63 +244,33 @@ def time_domain_feature_gen(df):
                           't_body_gyro_X','t_body_gyro_Y','t_body_gyro_Z']
     
     
-    ordered_time_sig_df = pd.DataFrame()
-    for col in new_columns_ordered: 
-        ordered_time_sig_df[col] = time_sig[col] 
-    
     # Calculating magnitude by iterating over each 3-axial signal
     for i in range(0,9,3): 
         mag_col_name = new_columns_ordered[i][:-1]+'mag'
-        x_col = np.array(ordered_time_sig_df[new_columns_ordered[i]])   # copy X_component
-        y_col = np.array(ordered_time_sig_df[new_columns_ordered[i+1]]) # copy Y_component
-        z_col = np.array(ordered_time_sig_df[new_columns_ordered[i+2]]) # copy Z_component
+        x_col = np.array(df[new_columns_ordered[i]])   # copy X_component
+        y_col = np.array(df[new_columns_ordered[i+1]]) # copy Y_component
+        z_col = np.array(df[new_columns_ordered[i+2]]) # copy Z_component
         
         mag_signal = mag_3_signals(x_col,y_col,z_col) # calculate magnitude of each signal[X,Y,Z]
-        ordered_time_sig_df[mag_col_name] = mag_signal 
+        df[mag_col_name] = mag_signal 
     
-    return ordered_time_sig_df 
+    return df 
 
 
 # In[10]:
 
 
-def generate_final_dataset(raw_dic):
+def concatenator(raw_dic):
     """
-    Get final processed data for segmentation.
-    Input: raw_dic i.e. raw_test or raw_train dict which contains each {subjectName}_{dance}_{trialNum}'s sensor data
-    Return: final_dic with the keys as {subjectName}_{dance}_{trialNum} with processed data that has 16 cols 
-    """
-    global DANCE_TO_NUM_MAP
-    
-    final_dic = {}
-    for key in raw_dic.keys():
-        df = time_domain_feature_gen(raw_dic[key].drop(["subject", "trialNum", "dance"], axis = 1))
-        sub = np.unique(raw_dic[key]["subject"])
-        trial = np.unique(raw_dic[key]["trialNum"])
-        dancemove = np.unique(raw_dic[key]["dance"])
-        df["subject"] = raw_dic[key]["subject"]
-        df["trialNum"] = raw_dic[key]["trialNum"]
-        df["dance"] = raw_dic[key]["dance"]
-        df["target"] = df["dance"].map(DANCE_TO_NUM_MAP)
-        final_dic[f"{sub}_{dancemove}_{trial}"] = df
-        
-    return final_dic
-
-
-# In[11]:
-
-
-def concatenator(processed_dic):
-    """
-    Concatenate processed_dic along the rows to generate train and test dframes which can be sent for segmentation.
-    Input: processed_dic
+    Concatenate raw dict along the rows to generate raw train and raw test dframes which can be sent for feature gen.
+    Input: raw_dic
     Return: concatenated_df i.e. dframe 
     """
-    concatenated_df = pd.concat(processed_dic.values(), axis = 0, ignore_index=True)
+    concatenated_df = pd.concat(raw_dic.values(), axis = 0, ignore_index=True)
     return concatenated_df
 
 
-# In[12]:
+# In[11]:
 
 
 def segment_df(df, targetCol):
@@ -316,8 +290,8 @@ def segment_df(df, targetCol):
     # grab corresponding mode of targetCol
     for row in range(0, len(df) - SEGMENT_SIZE, OVERLAP):
         window = []
-        for col in FEATURE_COLS:
-            window.append(df[col].values[row:row+SEGMENT_SIZE])
+        for col in FEATURE_COLS: 
+            window.append(df[col][row:row+SEGMENT_SIZE].values)
             
         segments.append(window)
         label = stats.mode(df[targetCol][row:row+SEGMENT_SIZE])[0][0]
@@ -330,14 +304,14 @@ def segment_df(df, targetCol):
     return reshaped_segments, labels
 
 
-# In[13]:
+# In[12]:
 
 
 def getInputVector(reshapedSegments):
     """
     Get the input vector to be fed into nn.
     Input: reshapedSegments after segmentation of df 
-    Return: Input vector of shape n windows * (20*2*12)
+    Return: Input vector of shape n windows * (20*1*12)
     Note: num of windows, n = (len(df) / overlap) - 1, if you take first window as w1, else it will be (len(df) / overlap) - 2
     """
     global SAMPLING_FREQ, WINDOW_SIZE, FEATURE_COLS_LEN
@@ -348,7 +322,7 @@ def getInputVector(reshapedSegments):
     return inputVector.astype("float32")
 
 
-# In[14]:
+# In[13]:
 
 
 def lookUp(dframe,sub,trialNum,dance):
@@ -361,7 +335,7 @@ def lookUp(dframe,sub,trialNum,dance):
     return df_considered
 
 
-# In[15]:
+# In[14]:
 
 
 def gen_mapping(danceArray):
@@ -378,7 +352,7 @@ def gen_mapping(danceArray):
     return (map_dance_to_num, map_num_to_dance)
 
 
-# In[16]:
+# In[15]:
 
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
@@ -407,15 +381,33 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.xlabel('Predicted label')
 
 
-# In[17]:
+# In[16]:
 
 
 # testing
-# test_dic = generate_final_dataset(gen_rawData(load_data_paths(TEST_FILEPATH)))
-# data_test, lbl_test = segment_df(concatenator(test_dic), "target")
-# test_X = getInputVector(data_test)
-# test_X.shape
-# len(test_X)
-# unique, counts = np.unique(lbl_test, return_counts=True)
-# dict(zip(unique, counts))
+raw_test_df = concatenator(gen_rawData(load_data_paths(TEST_FILEPATH)))
+raw_train_df = concatenator(gen_rawData(load_data_paths(TRAIN_FILEPATH)))
+normaliseData(raw_test_df)
+normaliseData(raw_train_df)
+feature_test_df = time_domain_feature_gen(raw_test_df)
+feature_train_df = time_domain_feature_gen(raw_train_df)
+feature_train_df["target"] = feature_train_df["dance"].map(DANCE_TO_NUM_MAP)
+feature_test_df = time_domain_feature_gen(raw_test_df)
+feature_test_df["target"] = feature_test_df["dance"].map(DANCE_TO_NUM_MAP)
+segment_train_df = feature_train_df.drop(RAW_COLS, axis = 1)
+segment_test_df = feature_test_df.drop(RAW_COLS, axis=1)
+train_segs, lbl_train = segment_df(segment_train_df,"target")
+test_segs, lbl_test = segment_df(segment_test_df, "target")
+training_X = getInputVector(train_segs)
+testing_X = getInputVector(test_segs)
+print("Training segments shape: ", train_segs.shape)
+print("Testing segments shape: ", test_segs.shape)
+print("Input Training Vector shape: ", training_X.shape)
+print("Input Testing Vector shape: ", testing_X.shape)
+
+
+# In[17]:
+
+
+# raw_test_df["acc_X"][0:20]
 
