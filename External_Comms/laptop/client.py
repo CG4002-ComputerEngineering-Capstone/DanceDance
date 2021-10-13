@@ -101,37 +101,36 @@ class LaptopClient(threading.Thread):
         while 1:
             # receive data indicating server is ready
             sample = []
-            inDancingState = False
             while len(sample) < globals_.PACKET_WINDOW_SIZE:
                 data = globals_.dataQueue.get()
-                print(f'data from bluno: {data}')
+                # print(f'data from bluno: {data}')
                 # print(type(data))
+                
                 # TODO perform check for packet indicating start of dance move. 
                 # If data is the packet containing start of dance move, call resetCumData, clear sample and append to sample
-                if data[0] == globals_.DANCING_STATE:
-                    if inDancingState == False:
-                        inDancingState = True
-                        resetCumData()
-                        sample = []
+                if data[0] == 'start':
+                    resetCumData()
+                    sample = []
+                    print(f'RESET SAMPLE - sample length: {len(sample)}')
+                else:
                     sample.append(data[1:])
-                elif data[0] != globals_.DANCING_STATE:
-                    inDancingState = False
+                    print(f'Sample length: {len(sample)}')
 
-                
+            print(f'enough sample length: {sample}')
 
             # print(sample)
                         
             # send sensor readings to dashboard
-            # print('send_sensor to dashboard')
+            print('send_sensor to dashboard')
             send_sensor(self.dancerId, sample)
 
             # preprocess data before sending to ultra96
             vector, vector_shape = append(sample)
             print(f'vector_shape: {vector_shape}')
-            vector_string = ','.join(list(map(str, list(vector[0].tolist()))))
-
-            time.sleep(0.1)
-            self.send_message(vector_string)
+            for v in vector:
+                vector_string = ','.join(list(map(str, list(v.tolist()))))
+                time.sleep(0.1)
+                self.send_message(vector_string)
 
             # timestamp = str(time.time() - self.clock_offset)
             # print(f'timestamp: {timestamp}')

@@ -12,7 +12,7 @@ service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
 # BEETLE_1 = "b0:b1:13:2d:b4:7d"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
-#BEETLE_0 = "b0:b1:13:2d:b4:19"
+# BEETLE_4 = "b0:b1:13:2d:b4:19"
 BEETLE_5 = "b0:b1:13:2d:b5:13"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -106,10 +106,14 @@ class MyDelegate(btle.DefaultDelegate):
         btle.DefaultDelegate.__init__(self)
         self.address = params
         self.inDancingState = False
-        # self.timer = threading.Timer(6, self.exitDancingState)
+        # self.immediatePrevDancingState = False # dancing state right before timer event happen
+        self.timer = None
 
-    # def exitDancingState(self):
-    #     self.inDancingState = False
+    def exitDancingState(self):
+        print('********************************************************************')
+        print(f'End of dancing state')
+        print('********************************************************************')
+        self.inDancingState = False
 
     def handleNotification(self, cHandle, data):
         for i in range(len(address)):
@@ -186,19 +190,37 @@ class MyDelegate(btle.DefaultDelegate):
                             # if packet is the start of dance move, set dancingState to true and start timer
                             # print(f'imu data packet: {packet}')
                             # print(type(packet))
-                            if self.inDancingState == False:
-                                if packet[10] == 1:
-                                    self.inDancingState = True
-                                    self.timer.start()
-                            if self.inDancingState == True:
-                                # add packet to queue to be sent to server for 6 seconds
-                                try:
-                                    packet_list = list(packet)
-                                    sensor_values = [packet_list[10]] + packet_list[1:7]
-                                    globals_.dataQueue.put(sensor_values)
+                            try:
+                                print(f'isDancingState: {self.inDancingState}')
+                                if self.inDancingState == False:
+                                    if packet[10] == 1:
+                                        self.inDancingState = True
+                                        # self.timer = threading.Timer(4.2, self.exitDancingState)
+                                        # self.timer.start()
+                                        # if not self.immediatePrevDancingState == True:
+                                            # means after 2 seconds the dancer is still dancing
+                                        print('********************************************************************')
+                                        print(f'Start of dance move')
+                                        print('********************************************************************')
+                                        globals_.dataQueue.put(['start'])
+                                    # else:
+                                    #     self.immediatePrevDancingState = False
+                                    
+                                if self.inDancingState == True:
+                                    # add packet to queue to be sent to server for 6 seconds
+                                    if packet[10] == 0:
+                                        print('setting dancing state to false')
+                                        self.inDancingState = False
+                                    else:
+                                        packet_list = list(packet)
+                                        sensor_values = [packet_list[10]] + packet_list[1:7]
+                                        globals_.dataQueue.put(sensor_values)
+                                    # print(f'added sensor values to queue {sensor_values}')
                                     # time.sleep(0.1)
-                                except Exception as e:
-                                    print(e)
+                            except Exception as e:
+                                print("ERROR ERROR ERROR ERROR ERROR ERROR ERROR")
+                                print(e)
+                                print("ERROR ERROR ERROR ERROR ERROR ERROR ERROR")
                             
 
                         elif(not checksum_imu(packet)):
