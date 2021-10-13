@@ -11,8 +11,10 @@ import globals_
 
 
 # BEETLE_0 = "b0:b1:13:2d:b3:1a"
-BEETLE_1 = "b0:b1:13:2d:b4:7d"
+# BEETLE_1 = "b0:b1:13:2d:b4:7d"
 # BEETLE_2 = "b0:b1:13:2d:d7:97"
+# BEETLE_4 = "b0:b1:13:2d:b4:19"
+BEETLE_5 = "b0:b1:13:2d:b5:13"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -20,7 +22,7 @@ Data_Header = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 Reconnect_Header = "####################################################"
 newline = "\n"
 
-address = [BEETLE_1]
+address = [BEETLE_5]
 address_map = {}
 
 for i in range(len(address)):

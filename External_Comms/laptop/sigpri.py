@@ -32,7 +32,6 @@ NYQ = SAMPLING_FREQ / float(2) # Nyquist frequency
 CUTOFF = 0.3 
 MAXFREQ = 10 
 
-DANCE_MOVES = ["jamesbond", "dab", "mermaid"]
 SENSOR_COLS = ["acc_X", "acc_Y", "acc_Z", "gyro_X", "gyro_Y", "gyro_Z"]
 
 READING_SIZE = SAMPLING_FREQ * WINDOW_SIZE # received sensor data length = SEGMENT SIZE 
@@ -223,17 +222,29 @@ def time_domain_feature_gen(df):
 # In[9]:
 
 
-def segment_global(): 
+def segmentator():
     """
-    Extracts the required window from the global list. 
-    Return : Extracted window of 2D array, i.e. expected 2D Numpy array of shape 40 * 12 
+    Extract segments using fixed-width sliding windows of size 2s. 
+    Return: 3D Numpy array of size - n segments * 12 cols * 40 rows 
+    
     """
+    global CUMULATIVE_DATA, OVERLAP, FEATURE_COLS, OVERLAP, READING_SIZE
     
-    global CUMULATIVE_DATA, OVERLAP, READING_SIZE
+    # loop through the 2d array of nrows * 12
+    # capture each column ==> size of each col = 40 and there should 12 cols ==> this will be the first segment 
+    # segments will be a n segments * 12col * 40 values 
     
-    input_selected = CUMULATIVE_DATA[0:READING_SIZE] # 40 rows or data pts selected 
-    CUMULATIVE_DATA = np.delete(CUMULATIVE_DATA, np.s_[0:OVERLAP], axis = 0) # pop first 20 
-    return input_selected
+    segments = []
+    for row in range(0, len(CUMULATIVE_DATA)-(READING_SIZE-1), 20): 
+        print(f"Sampling row:{row} to row:{row+READING_SIZE}")
+        windows = []
+        for col in range(0,12):
+            windows.append(CUMULATIVE_DATA[row:row+READING_SIZE,col])
+        print("Shape of Window: ", np.asarray(windows).shape)
+        segments.append(windows)
+    print("Shape of segments : ", np.asarray(segments).shape)
+    CUMULATIVE_DATA = np.delete(CUMULATIVE_DATA, np.s_[0:OVERLAP], axis = 0) 
+    return np.asarray(segments)  
 
 
 # In[10]:
@@ -241,20 +252,17 @@ def segment_global():
 
 def getInputVector(arr):
     """
-    Transform window of 40 data points into a single 1D array representing each window to be fed into nn. 
-    Input: 2D Numpy arr of expected shape 40 * 12 
+    Transform 3D Numpy array of sampled data points that form a window 
+    into a single 1D array representing each window to be fed into nn. 
+    Input: 3D Numpy arr of expected shape n segments * 40 * 12 
     Return: inputVector for nn, i.e. 1 x (40rows * 12features)
     """
     global READING_SIZE, FEATURE_COLS
+    ncols = SAMPLING_FREQ * WINDOW_SIZE * FEATURE_COLS
     
-#     segments = []
-    ncols = READING_SIZE * FEATURE_COLS
-#     for i in range(0,arr.shape[1]): 
-#         segments.append(arr[:,i])
-#     reshaped_segments = np.asarray(segments,dtype=np.float32).reshape(-1,READING_SIZE,FEATURE_COLS)
-#     invec = reshaped_segments.reshape(reshaped_segments.shape[0], ncols)
-    invec = arr.reshape(1, ncols)
-    return invec.astype("float32")
+    inputVector = np.asarray(arr).reshape(arr.shape[0], ncols)
+    
+    return inputVector.astype("float32")
 
 
 # In[11]:
@@ -284,9 +292,11 @@ def append(data):
     raw_df = generateDframeForFeatureGeneration(arr)
     df = time_domain_feature_gen(raw_df)
     CUMULATIVE_DATA = np.concatenate((CUMULATIVE_DATA, df.values))
-    selected_window = segment_global()
-    inputvector = getInputVector(selected_window)
-    print("cumulative data shape: ", CUMULATIVE_DATA.shape)
+    print("cumulative data shape after appending new data: ", CUMULATIVE_DATA.shape)
+    #selected_window = segment_global()
+    segs = segmentator()
+    inputvector = getInputVector(segs)
+    print("cumulative data shape after input vector generated: ", CUMULATIVE_DATA.shape)
     
     return (inputvector, inputvector.shape)
 
@@ -308,15 +318,22 @@ def resetCumData():
 
 
 # # for testing 
+# resetCumData()
 # df = pd.read_csv("./capstone_data/test/dab_sean_1.csv", index_col=None, header = None )
 # iv, ivshape = append(np.asarray(df.values[0:40, 0:6]))
 # print("input vector shape:", ivshape)
-# resetCumData()
-# CUMULATIVE_DATA
 
 
 # In[14]:
 
 
-#iv
+# iv, ivshape = append(np.asarray(df.values[40:80, 0:6]))
+# print("input vector shape:", ivshape)
+
+
+# In[15]:
+
+
+# iv, ivshape = append(np.asarray(df.values[80:120, 0:6]))
+# print("input vector shape:", ivshape)
 
