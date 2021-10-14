@@ -7,6 +7,8 @@ import threading
 import base64
 
 import globals_
+from dashboard import send_sensor
+from sigpri import append, resetCumData
 
 ports = [65432, 65431, 65430]
 LOCAL_PORT = 65432
@@ -14,11 +16,12 @@ REMOTE_PORT = 65432
 
 
 class LaptopClient(threading.Thread):
-    def __init__(self, dancerId):
+    def __init__(self, dancerId, clientConnectedFlag):
         threading.Thread.__init__(self)
         self.dancerId = dancerId
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clock_offset = 0
+        self.clientConnectedFlag = clientConnectedFlag
 
     def send_message(self, message):
         bytes_message = base64.b64encode(str.encode(str(message)))
@@ -52,6 +55,7 @@ class LaptopClient(threading.Thread):
 
         self.socket.connect(('localhost', LOCAL_PORT))
         print('Successfully connected to Ultra96!')
+        self.clientConnectedFlag.set()
         self.send_message(self.dancerId)
 
     def clock_sync(self):
@@ -85,6 +89,7 @@ class LaptopClient(threading.Thread):
 
     def run(self):
         self.setup_connection()
+        
         command = self.receive_message()
         print('received message:', command)
         if command != 'server_ready':
@@ -93,12 +98,39 @@ class LaptopClient(threading.Thread):
         # self.send_message('sync')
         # self.clock_sync()
         time.sleep(1)
-        for i in range(100):
+        while 1:
             # receive data indicating server is ready
-            print(i)
-            data = globals_.dataQueue.get()
-            time.sleep(0.1)
-            self.send_message(data)
+            sample = []
+            while len(sample) < globals_.PACKET_WINDOW_SIZE:
+                data = globals_.dataQueue.get()
+                # print(f'data from bluno: {data}')
+                # print(type(data))
+                
+                # TODO perform check for packet indicating start of dance move. 
+                # If data is the packet containing start of dance move, call resetCumData, clear sample and append to sample
+                if data[0] == 'start':
+                    resetCumData()
+                    sample = []
+                    print(f'RESET SAMPLE - sample length: {len(sample)}')
+                else:
+                    sample.append(data[1:])
+                    print(f'Sample length: {len(sample)}')
+
+            print(f'enough sample length: {sample}')
+
+            # print(sample)
+                        
+            # send sensor readings to dashboard
+            print('send_sensor to dashboard')
+            send_sensor(self.dancerId, sample)
+
+            # preprocess data before sending to ultra96
+            vector, vector_shape = append(sample)
+            print(f'vector_shape: {vector_shape}')
+            for v in vector:
+                vector_string = ','.join(list(map(str, list(v.tolist()))))
+                time.sleep(0.1)
+                self.send_message(vector_string)
 
             # timestamp = str(time.time() - self.clock_offset)
             # print(f'timestamp: {timestamp}')
