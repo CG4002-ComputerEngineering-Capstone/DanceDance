@@ -69,8 +69,8 @@ function LineChart({GetLatestData}) {
             }
           },
           y: {
-            suggestedMax: 20000,
-            suggestedMin: -20000
+            suggestedMax: 1,
+            suggestedMin: -1
           }
         }
       }}

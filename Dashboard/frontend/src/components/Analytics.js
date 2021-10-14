@@ -37,10 +37,15 @@ function Analytics() {
 
   const handleFileChange = e => {
     const fileReader = new FileReader();
-    fileReader.readAsText(e.target.files[0], "UTF-8");
-    fileReader.onload = e => {
-      setData(JSON.parse(e.target.result));
-    };
+    try {
+      fileReader.readAsText(e.target.files[0], "UTF-8");
+      fileReader.onload = e => {
+        setData(JSON.parse(e.target.result));
+      };
+    } catch (err) {
+      console.log(err)
+    }
+
   }
 
   const GetCurrentEntry = () => {

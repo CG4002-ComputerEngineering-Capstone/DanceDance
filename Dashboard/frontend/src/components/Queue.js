@@ -4,7 +4,12 @@ function Queue () {
       console.log(collection);
   };
   this.enqueue = function(element) {
-      collection.push(element);
+    collection.push(element);
+    /*
+    if (collection.length > 80) {
+        return collection.shift();
+    }
+    */
   };
   this.dequeue = function() {
       return collection.shift(); 
