@@ -74,7 +74,29 @@ def load_data_paths(location):
 # In[4]:
 
 
-def normaliseData(dframe):
+def normaliseTrainData(dframe):
+    """
+    Normalize features for data set (values between 0 and 1). Columns rounded to 4dp after normalisation.
+    Input: raw sensor dframe 
+    No return value
+    """
+    
+    global COLS_USED
+    
+    train_max = {}
+    
+    pd.options.mode.chained_assignment = None  # default='warn'
+    for col in COLS_USED:
+        train_max[col] = dframe[col].max()
+        dframe[col] = dframe[col] / dframe[col].max()
+        dframe[col] = dframe[col].round(4)
+    return train_max
+
+
+# In[5]:
+
+
+def normaliseTestData(dframe, train_max):
     """
     Normalize features for data set (values between 0 and 1). Columns rounded to 4dp after normalisation.
     Input: raw sensor dframe 
@@ -85,7 +107,7 @@ def normaliseData(dframe):
     
     pd.options.mode.chained_assignment = None  # default='warn'
     for col in COLS_USED:
-        dframe[col] = dframe[col] / dframe[col].max()
+        dframe[col] = dframe[col] / train_max[col]
         dframe[col] = dframe[col].round(4)
 
 
@@ -95,7 +117,7 @@ def normaliseData(dframe):
 #  - Thus for n dance moves, each subject has 3600 * n values
 #  - With k subjects, the dataset will have k * 3600 * n values 
 
-# In[5]:
+# In[6]:
 
 
 def gen_rawData(given_filepaths):
@@ -122,7 +144,7 @@ def gen_rawData(given_filepaths):
     return frames 
 
 
-# In[6]:
+# In[7]:
 
 
 def filter_signal(signal):
@@ -136,7 +158,7 @@ def filter_signal(signal):
     return  med_filtered  
 
 
-# In[7]:
+# In[8]:
 
 
 def mag_3_signals(x,y,z): 
@@ -148,7 +170,7 @@ def mag_3_signals(x,y,z):
     return [math.sqrt((x[i]**2+y[i]**2+z[i]**2)) for i in range(len(x))]
 
 
-# In[8]:
+# In[9]:
 
 
 def t_domain_feature_per_signal(t_signal):
@@ -211,7 +233,7 @@ def t_domain_feature_per_signal(t_signal):
     return (total_component,t_DC_component,t_body_component,t_noise)
 
 
-# In[9]:
+# In[10]:
 
 
 def time_domain_feature_gen(df):
@@ -257,7 +279,7 @@ def time_domain_feature_gen(df):
     return df 
 
 
-# In[10]:
+# In[11]:
 
 
 def concatenator(raw_dic):
@@ -270,7 +292,7 @@ def concatenator(raw_dic):
     return concatenated_df
 
 
-# In[11]:
+# In[12]:
 
 
 def segment_df(df, targetCol):
@@ -304,7 +326,7 @@ def segment_df(df, targetCol):
     return reshaped_segments, labels
 
 
-# In[12]:
+# In[13]:
 
 
 def getInputVector(reshapedSegments):
@@ -322,7 +344,7 @@ def getInputVector(reshapedSegments):
     return inputVector.astype("float32")
 
 
-# In[13]:
+# In[14]:
 
 
 def lookUp(dframe,sub,trialNum,dance):
@@ -335,7 +357,7 @@ def lookUp(dframe,sub,trialNum,dance):
     return df_considered
 
 
-# In[14]:
+# In[15]:
 
 
 def gen_mapping(danceArray):
@@ -352,7 +374,7 @@ def gen_mapping(danceArray):
     return (map_dance_to_num, map_num_to_dance)
 
 
-# In[15]:
+# In[16]:
 
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
@@ -381,14 +403,14 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.xlabel('Predicted label')
 
 
-# In[16]:
+# In[17]:
 
 
 # testing
 raw_test_df = concatenator(gen_rawData(load_data_paths(TEST_FILEPATH)))
 raw_train_df = concatenator(gen_rawData(load_data_paths(TRAIN_FILEPATH)))
-normaliseData(raw_test_df)
-normaliseData(raw_train_df)
+train_max = normaliseTrainData(raw_train_df)
+normaliseTestData(raw_test_df, train_max)
 feature_test_df = time_domain_feature_gen(raw_test_df)
 feature_train_df = time_domain_feature_gen(raw_train_df)
 feature_train_df["target"] = feature_train_df["dance"].map(DANCE_TO_NUM_MAP)
@@ -406,7 +428,7 @@ print("Input Training Vector shape: ", training_X.shape)
 print("Input Testing Vector shape: ", testing_X.shape)
 
 
-# In[17]:
+# In[18]:
 
 
 # raw_test_df["acc_X"][0:20]

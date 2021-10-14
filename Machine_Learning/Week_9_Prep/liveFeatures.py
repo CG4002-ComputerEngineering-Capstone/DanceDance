@@ -32,6 +32,14 @@ FEATURE_COLS = ['t_body_acc_X','t_body_acc_Y','t_body_acc_Z',
                 't_body_gyro_X','t_body_gyro_Y','t_body_gyro_Z',
                 't_body_acc_mag','t_grav_acc_mag','t_body_gyro_mag']
 
+TRAIN_MAX = {'acc_X': 1.27,
+             'acc_Y': 1.27,
+             'acc_Z': 1.27,
+             'gyro_X': 276.28,
+             'gyro_Y': 289.32,
+             'gyro_Z': 271.8
+            }
+
 CUTOFF = 0.3 
 MAXFREQ = 10 
 
@@ -80,12 +88,12 @@ def normaliseData(dframe):
     No return value
     """
     
-    global SENSOR_COLS
+    global SENSOR_COLS, TRA
     
     pd.options.mode.chained_assignment = None  # default='warn'
     for col in SENSOR_COLS:
         dframe[col] = dframe[col].div(100).round(6) # received sensor data were scaled by 100
-        dframe[col] = dframe[col] / dframe[col].max()
+        dframe[col] = dframe[col] / TRAIN_MAX[col]
         dframe[col] = dframe[col].round(4)
 
 
