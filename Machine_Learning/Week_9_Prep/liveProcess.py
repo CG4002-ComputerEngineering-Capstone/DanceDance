@@ -22,13 +22,14 @@ SENSOR_COLS = ["acc_X", "acc_Y", "acc_Z", "gyro_X", "gyro_Y", "gyro_Z", "yaw", "
 TRAIN_MAX = {'acc_X': 1.27,
              'acc_Y': 1.27,
              'acc_Z': 1.27,
-             'gyro_X': 276.28,
-             'gyro_Y': 266.44,
-             'gyro_Z': 271.8,
-             'yaw': 327.28,
-             'pitch': 15.59,
-             'roll': 15.14
+             'gyro_X': 292.05,
+             'gyro_Y': 289.32,
+             'gyro_Z': 269.42,
+             'yaw': 327.65,
+             'pitch': 16.97,
+             'roll': 15.87
             }
+
 
 CUMULATIVE_DATA = np.zeros((1,len(SENSOR_COLS)), dtype=float, order='C') # holds rows of live sensor data sent 
 CUMULATIVE_DATA = np.delete(CUMULATIVE_DATA, 0,axis=0)
@@ -37,21 +38,41 @@ CUMULATIVE_DATA = np.delete(CUMULATIVE_DATA, 0,axis=0)
 # In[3]:
 
 
-def filter_signal(df):
-    """
-    Applies 3rd order median filter for each signal i.e. Each axial column in dataset.
-    Input: raw_df
-    """
+# def filter_input(arr):
+#     """
+#     Applies 3rd order median filter for each signal i.e. Each axial column in dataset.
+#     Input: raw_input_arr of shape 40x6 appended 
+#     """
     
-    global SENSOR_COLS
+#     global SENSOR_COLS
+#     array = np.asarray(arr)
+#     df = pd.DataFrame(array, index=None, columns=SENSOR_COLS)
     
-    for col in SENSOR_COLS: 
-        array = np.array(df[col]) 
-        med_filtered = medfilt(array, kernel_size=3) 
-        df[col] = med_filtered  
+#     for col in SENSOR_COLS: 
+#         vals = np.array(df[col]) 
+#         med_filtered = medfilt(vals, kernel_size=3) 
+#         df[col] = med_filtered  
+#     return df.values
 
 
 # In[4]:
+
+
+# def filter_signal(df):
+#     """
+#     Applies 3rd order median filter for each signal i.e. Each axial column in dataset.
+#     Input: raw_df
+#     """
+    
+#     global SENSOR_COLS
+    
+#     for col in SENSOR_COLS: 
+#         array = np.array(df[col]) 
+#         med_filtered = medfilt(array, kernel_size=3) 
+#         df[col] = med_filtered  
+
+
+# In[5]:
 
 
 def normaliseData(dframe):
@@ -69,7 +90,7 @@ def normaliseData(dframe):
         dframe[col] = dframe[col].round(4)
 
 
-# In[5]:
+# In[6]:
 
 
 def segmentator():
@@ -85,38 +106,38 @@ def segmentator():
     
     segments = []
     for row in range(0, len(CUMULATIVE_DATA)-(SEGMENT_SIZE-1), OVERLAP): 
-        print(f"Sampling row : {row} to row : {row+SEGMENT_SIZE}")
+#         print(f"Sampling row : {row} to row : {row+SEGMENT_SIZE}")
         windows = []
         for col in range(0,len(SENSOR_COLS)):
             windows.append(CUMULATIVE_DATA[row:row+SEGMENT_SIZE,col])
-        print("Shape of Window: ", np.asarray(windows).shape)
+#         print("Shape of Window: ", np.asarray(windows).shape)
         segments.append(windows)
-    print("Shape of segments : ", np.asarray(segments).shape)
+#     print("Shape of segments : ", np.asarray(segments).shape)
     CUMULATIVE_DATA = np.delete(CUMULATIVE_DATA, np.s_[0:OVERLAP], axis = 0) 
     reshaped_segments = np.asarray(segments,dtype =np.float32).reshape(-1,SEGMENT_SIZE,len(SENSOR_COLS))
     return reshaped_segments
 
 
-# In[6]:
+# In[7]:
 
 
 def getfinalSegs(segs):
     """
     Filter and Normalise each window selected.
     Input: 3D Numpy segments array obtained after segmentation
-    Return: 3D Numpy array upon filtering & normalisation
+    Return: 3D Numpy array upon normalisation
     """
     arr = np.asarray(segs)
     final_segs = []
     for r in range(0, arr.shape[0]):
         df = pd.DataFrame(arr[r], index=None, columns=SENSOR_COLS)
-        filter_signal(df)
+     #   filter_signal(df)
         normaliseData(df)
         final_segs.append(df.values)
     return np.asarray(final_segs)
 
 
-# In[7]:
+# In[8]:
 
 
 def getInputVector(finalSegs):
@@ -133,7 +154,7 @@ def getInputVector(finalSegs):
     return inputVector.astype("float32")
 
 
-# In[8]:
+# In[9]:
 
 
 def append(data):
@@ -153,17 +174,18 @@ def append(data):
         padding = np.zeros((leftover, len(SENSOR_COLS) ),dtype=float, order='C')
         arr = np.concatenate((arr,padding))
         
+    #filtered_arr = np.asarray(filter_input(arr))
     CUMULATIVE_DATA = np.concatenate((CUMULATIVE_DATA, arr))
-#     print("GLOBAL ARRAY SHAPE BEFORE SEGMENTATION : ", CUMULATIVE_DATA.shape)
+    print("GLOBAL ARRAY SHAPE BEFORE SEGMENTATION : ", CUMULATIVE_DATA.shape)
     segs = segmentator()
-#     print("GLOBAL ARRAY SHAPE AFTER SEGMENTATION : ", CUMULATIVE_DATA.shape)
+    print("GLOBAL ARRAY SHAPE AFTER SEGMENTATION : ", CUMULATIVE_DATA.shape)
     fin_segs = getfinalSegs(segs)
     iv = getInputVector(fin_segs)
     
     return iv
 
 
-# In[9]:
+# In[10]:
 
 
 def resetCumData():
@@ -177,24 +199,25 @@ def resetCumData():
     CUMULATIVE_DATA = np.delete(CUMULATIVE_DATA, 0,axis=0)
 
 
-# In[10]:
+# In[11]:
 
 
 # # for testing 
 # resetCumData()
-# df = pd.read_csv("./capstone_data/test/dab_sean_1.csv", index_col=None, header = None )
-# iv = append(np.asarray(df.values[0:20, 0:9]))
-# print("input vector shape:", iv.shape)
-
-
-# In[11]:
-
-
-# iv = append(np.asarray(df.values[20:40, 0:9]))
+# df = pd.read_csv("./capstone_data/test/jamesbond_matthew_1.csv", index_col=None, header = None )
+# iv = append(np.asarray(df.values[0:40, 0:9]))
 # print("input vector shape:", iv.shape)
 
 
 # In[12]:
+
+
+# iv = append(np.asarray(df.values[40:80, 0:9]))
+# print("input vector shape:", iv.shape)
+# print(list(iv[0]))
+
+
+# In[13]:
 
 
 # iv = append(np.asarray(df.values[40:60, 0:9]))
