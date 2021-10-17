@@ -8,9 +8,10 @@ import csv
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
-BEETLE_1 = "b0:b1:13:2d:b4:7d"
+#BEETLE_1 = "b0:b1:13:2d:b5:13"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
 #BEETLE_0 = "b0:b1:13:2d:b4:19"
+BEETLE_3 = "b0:b1:13:2d:b4:7d"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -20,7 +21,7 @@ newline = "\n"
 
  
 csv_time = 0
-address = [BEETLE_1]
+address = [BEETLE_3]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}
@@ -85,8 +86,8 @@ def checksum_ack(packet):
     return False
 
 def checksum_imu(packet):
-    check = packet[0] ^ packet[1] ^ packet[2] ^ packet[3] ^ packet[4] ^ packet[5] ^ packet[6] ^ packet[7] ^ packet[8] ^ packet[9] ^ packet[10]
-    if check == packet[11]:
+    check = packet[0] ^ packet[1] ^ packet[2] ^ packet[3] ^ packet[4] ^ packet[5] ^ packet[6] ^ packet[7] 
+    if check == packet[8]:
         return True
     return False
 
@@ -159,12 +160,12 @@ class MyDelegate(btle.DefaultDelegate):
                             print(newline)
 
                     elif packet_type == 2 and handshake_map[addr] == True:
-                        packet = struct.unpack("<bbbbhhhhhhhh", packet)
+                        packet = struct.unpack("<bhhhihhbi", packet)
                         global csv_time
                         #print(Data_Header)
                         #print("Receiving data from beetle ID: ", i)
                         if(checksum_imu(packet)):
-                            #print("Checksum correct!")
+                            print("Checksum correct!")
                             #print(packet)
                             #print(Data_Header)
                             #print(newline)
@@ -183,7 +184,7 @@ class MyDelegate(btle.DefaultDelegate):
                             #print(train_data)
                             print(type(real_data))
                             print(time.time() - csv_time)
-                            with open("output.csv", "w", newline="") as f:
+                            with open("trial.csv", "w", newline="") as f:
                                 writer = csv.writer(f)
                                 writer.writerows(train_data)
                                             
