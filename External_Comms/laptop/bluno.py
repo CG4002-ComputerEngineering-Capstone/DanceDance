@@ -88,8 +88,8 @@ def checksum_ack(packet):
     return False
 
 def checksum_imu(packet):
-    check = packet[0] ^ packet[1] ^ packet[2] ^ packet[3] ^ packet[4] ^ packet[5] ^ packet[6] ^ packet[7] ^ packet[8] ^ packet[9] ^ packet[10]
-    if check == packet[11]:
+    check = packet[0] ^ packet[1] ^ packet[2] ^ packet[3] ^ packet[4] ^ packet[5] ^ packet[6] ^ packet[7] 
+    if check == packet[8]:
         return True
     return False
 
@@ -171,7 +171,7 @@ class MyDelegate(btle.DefaultDelegate):
                             print(newline)
 
                     elif packet_type == 2 and handshake_map[addr] == True:
-                        packet = struct.unpack("<bbbbhhhhhhhh", packet)
+                        packet = struct.unpack("<bhhhihhbi", packet)
                         global csv_time
                         #print(Data_Header)
                         #print("Receiving data from beetle ID: ", i)
@@ -193,7 +193,7 @@ class MyDelegate(btle.DefaultDelegate):
                             try:
                                 print(f'isDancingState: {self.inDancingState}')
                                 if self.inDancingState == False:
-                                    if packet[10] == 1:
+                                    if packet[7] == 1:
                                         self.inDancingState = True
                                         # self.timer = threading.Timer(4.2, self.exitDancingState)
                                         # self.timer.start()
@@ -208,7 +208,7 @@ class MyDelegate(btle.DefaultDelegate):
                                     
                                 if self.inDancingState == True:
                                     # add packet to queue to be sent to server for 6 seconds
-                                    if packet[10] == 0:
+                                    if packet[7] == 0:
                                         print('setting dancing state to false')
                                         self.inDancingState = False
                                     else:
