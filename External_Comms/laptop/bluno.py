@@ -213,7 +213,7 @@ class MyDelegate(btle.DefaultDelegate):
                                         self.inDancingState = False
                                     else:
                                         packet_list = list(packet)
-                                        sensor_values = [packet_list[10]] + packet_list[1:7]
+                                        sensor_values = [packet_list[7]] + packet_list[1:6]
                                         globals_.dataQueue.put(sensor_values)
                                     # print(f'added sensor values to queue {sensor_values}')
                                     # time.sleep(0.1)
