@@ -14,28 +14,25 @@ int16_t gX, gY, gZ;
 
 
 //dummy data
-float accX[] = {-1.99};
-float accY[] = {-0.56};
-float accZ[] = {0.4};
-float gyrX[] = {100.0};
-float gyrY[] = {-150.0};
-float yaw[] = {340.5};
-float pitch[] = {200.6};
-float roll[] = {134.7};
+float accX[] = {500};
+float accY[] = {550};
+float accZ[] = {-6000};
+//float gyrX[] = {100.0};
+//float gyrY[] = {-150.0};
+float yaw[] = {30000};
+float pitch[] = {5000};
+float roll[] = {10000};
 
 struct Datapacket {
-  int8_t type;
-  int8_t aX; 
-  int8_t aY;
-  int8_t aZ;
-  int16_t gX;
-  int16_t gY;
-  int16_t gZ;
-  int16_t y;
-  int16_t p;
-  int16_t r;
-  int16_t start_move;
-  int16_t checksum;
+  int8_t type; 
+  int16_t aX; 
+  int16_t aY; 
+  int16_t aZ; 
+  int32_t y; 
+  int16_t p; 
+  int16_t r; 
+  int8_t start_move; 
+  int32_t checksum; 
 };
 
 struct Ackpacket {
@@ -99,22 +96,21 @@ void loop(){
 //comment out and debug
 void senddata(){
   Datapacket packet;
-  packet.type = IMU_DATA;
-  packet.aX = int8_t(accX[0]); 
-  packet.aY = int8_t(accX[0]);
-  packet.aZ = int8_t(accX[0]);
-  packet.gX = int16_t(gyrX[0]);
-  packet.gY = int16_t(gyrX[0]);
-  packet.gZ = int16_t(gyrX[0]);
-  packet.y = 6;
-  packet.p = 6;
-  packet.r = 6;
-  packet.start_move = 0;
-  packet.checksum = getChecksum(packet);
+  packet.type = IMU_DATA; //b
+  packet.aX = int16_t(accX[0]); //h 
+  packet.aY = int16_t(accY[0]); //h
+  packet.aZ = int16_t(accZ[0]); //h
+//  packet.gX = int16_t(gyrX[0]);
+//  packet.gY = int16_t(gyrX[0]);
+//  packet.gZ = int16_t(gyrX[0]);
+  packet.y = int32_t(yaw[0]); //i
+  packet.p = int16_t(pitch[0]); //h
+  packet.r = int16_t(roll[0]); //h
+  packet.start_move = 0; //b
+  packet.checksum = getChecksum(packet); //i
   Serial.write((uint8_t *)&packet, sizeof(packet));
 
-  delay(48);
-  //delay(45);
+  delay(50);
 }
 
 void sendack() {
@@ -152,8 +148,8 @@ void sendemg() {
   
 }
 
-long getChecksum(Datapacket packet){
-  return packet.type ^ packet.aX ^ packet.aY ^ packet.aZ ^ packet.gX ^ packet.gY ^ packet.gZ ^ packet.y ^ packet.p ^ packet.r ^ packet.start_move;
+int32_t getChecksum(Datapacket packet){
+  return packet.type ^ packet.aX ^ packet.aY ^ packet.aZ ^ packet.y ^ packet.p ^ packet.r ^ packet.start_move;
 }
 
 long getAckChecksum(Ackpacket packet){
