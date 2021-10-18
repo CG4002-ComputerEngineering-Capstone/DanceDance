@@ -8,7 +8,9 @@ import base64
 
 import globals_
 from dashboard import send_sensor
-from sigpri import append, resetCumData
+# from sigpri import append, resetCumData
+# from liveFeatures import append, resetCumData
+from liveProcess import append, resetCumData
 
 ports = [65432, 65431, 65430]
 LOCAL_PORT = 65432
@@ -125,8 +127,10 @@ class LaptopClient(threading.Thread):
             send_sensor(self.dancerId, sample)
 
             # preprocess data before sending to ultra96
-            vector, vector_shape = append(sample)
-            print(f'vector_shape: {vector_shape}')
+            # vector, vector_shape = append(sample)
+            # print(f'vector_shape: {vector_shape}')
+            vector = append(sample)
+            print(f'vector shape: {vector.shape}')
             for v in vector:
                 vector_string = ','.join(list(map(str, list(v.tolist()))))
                 time.sleep(0.1)
