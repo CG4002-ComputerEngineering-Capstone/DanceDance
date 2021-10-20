@@ -8,7 +8,7 @@ import csv
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
-BEETLE_1 = "b0:b1:13:2d:b5:13"
+BEETLE_1 = "b0:b1:13:2d:d4:86"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
 #BEETLE_0 = "b0:b1:13:2d:b4:19"
 #BEETLE_3 = "b0:b1:13:2d:b4:7d"
@@ -184,7 +184,7 @@ class MyDelegate(btle.DefaultDelegate):
                             #print(train_data)
                             print(type(real_data))
                             print(time.time() - csv_time)
-                            with open("mermaid_haritha_5_.csv", "w", newline="") as f:
+                            with open("jamesbond_matthew_4_.csv", "w", newline="") as f:
                                 writer = csv.writer(f)
                                 writer.writerows(train_data)
                                             
