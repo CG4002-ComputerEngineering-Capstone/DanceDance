@@ -22,7 +22,7 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 
 SAMPLING_FREQ = 20 # Hz 
 WINDOW_SIZE = 2 # sec 
-OVERLAP = 20 # 
+OVERLAP = 20 
 SEGMENT_SIZE = SAMPLING_FREQ * WINDOW_SIZE # 40
 
 SENSOR_COLS = ["acc_X", "acc_Y", "acc_Z", "gyro_X", "gyro_Y", "gyro_Z", "yaw", "pitch", "roll"]
@@ -142,7 +142,7 @@ def gen_rawData(given_filepaths):
         raw_df["trialNum"] = int(trialNum)
         raw_df["dance"] = dance
         frames[f"{subjectName}_{dance}_{trialNum}"] = raw_df
-        #filter_signal(raw_df)
+        filter_signal(raw_df)
     return frames 
 
 
@@ -231,8 +231,6 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
 
 raw_train_df = concatenator(gen_rawData(load_data_paths(TRAIN_FILEPATH)))
 raw_test_df = concatenator(gen_rawData(load_data_paths(TEST_FILEPATH)))
-# filter_signal(raw_train_df)
-# filter_signal(raw_test_df)
 TRAIN_MAX = normaliseTrainData(raw_train_df)
 normaliseTestData(raw_test_df, TRAIN_MAX)
 raw_test_df["target"] = raw_test_df["dance"].map(DANCE_TO_NUM_MAP)
