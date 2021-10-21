@@ -1,7 +1,7 @@
 #include "Wire.h"
 
 #define MPU_SAMPLING_RATE 20       // 20Hz
-#define MYOWARE_SAMPLING_RATE 500  // 500Hz
+#define MYOWARE_SAMPLING_RATE 100  // 500Hz
 
 #define HANDSHAKE 'h'
 #define ACK 1
@@ -156,19 +156,22 @@ void loop() {
     }
     
     myoware[j] = myowareSensor - movingAverage;
-    /*
+    
     if(j == 100) {
       RMS = calculateRMS();
       MAV = calculateMAV();
       ZCR = calculateZCR();
+      sendemg();
+      /*
       Serial.print("RMS: ");
       Serial.print(RMS);
       Serial.print(" MAV: ");
       Serial.print(MAV);
       Serial.print(" ZCR: ");
       Serial.println(ZCR);      
+      */
     }
-    */
+    
     previousTimeMyoware = currentTime;
     j++;
   }
@@ -368,9 +371,9 @@ void sendack() {
 void sendemg() {
   Emgpacket packet;
   packet.type = EMG_DATA;
-  packet.data_1 = 5000;
-  packet.data_2 = 7000;
-  packet.data_3 = 9888;
+  packet.data_1 = int16_t(RMS);
+  packet.data_2 = int16_t(MAV);
+  packet.data_3 = int16_t(ZCR);
   packet.padding_2 = 0;
   packet.padding_3 = 0;
   packet.padding_4 = 0;
@@ -378,9 +381,7 @@ void sendemg() {
   packet.padding_6 = 0;
   packet.padding_7 = 0;
   packet.checksum = getEmgChecksum(packet);
-  Serial.write((uint8_t *)&packet, sizeof(packet));
-  delay(10);
-  
+  Serial.write((uint8_t *)&packet, sizeof(packet)); 
 }
 
 void senddirection(){
