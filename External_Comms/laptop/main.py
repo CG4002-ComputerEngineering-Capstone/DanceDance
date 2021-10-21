@@ -28,8 +28,6 @@ address_map = {}
 for i in range(len(address)):
     address_map[address[i]] = i
 
-# dummy_data = '-1,-1,-1,100,100,100,6,6,6'
-
 if __name__ == '__main__':
 
     if len(sys.argv) != 2:
@@ -44,11 +42,11 @@ if __name__ == '__main__':
 
     clientConnectedFlag.wait()
     print('Clients connected, waiting for bluetooth')
-    time.sleep(5)
+    # time.sleep(20)
 
     # for i in range(10):
     #     for j in range(140):
-    #         if j == 1:
+    #         if j == 0:
     #             dummy_data = [time.time()] + [int(dancerId) for x in range(6)]
     #         else:
     #             dummy_data = [int(dancerId) for x in range(6)]

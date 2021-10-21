@@ -10,9 +10,11 @@ import globals_
 from dashboard import send_sensor
 # from sigpri import append, resetCumData
 # from liveFeatures import append, resetCumData
-from liveProcess import append, resetCumData
+# from liveProcess import append, resetCumData
+from elevenLive import append, resetCumData
 
-ports = [65432, 65431, 65430]
+
+LOCAL_PORTS = [65432, 65431, 65430]
 LOCAL_PORT = 65432
 REMOTE_PORT = 65432
 
@@ -26,7 +28,7 @@ class LaptopClient(threading.Thread):
         self.clientConnectedFlag = clientConnectedFlag
         self.clockSyncFlag = threading.Event()
         self.sendMsgLock = threading.Lock()
-        self.clock_offset_history = []
+        # self.clock_offset_history = []
 
     def send_message(self, message):
         bytes_message = base64.b64encode(str.encode(str(message)))
@@ -51,14 +53,14 @@ class LaptopClient(threading.Thread):
         tunnel2 = sshtunnel.SSHTunnelForwarder(
             ssh_address_or_host=('127.0.0.1', tunnel1.local_bind_port),
             remote_bind_address=('127.0.0.1', REMOTE_PORT),
-            local_bind_address=('127.0.0.1', ports[self.dancerId-1]),
+            local_bind_address=('127.0.0.1', LOCAL_PORTS[self.dancerId-1]),
             ssh_username='xilinx',
             ssh_password='xilinx'
         )
         tunnel2.start()
         print(f'Connection to tunnel2 OK: {tunnel2.tunnel_bindings}')
 
-        self.socket.connect(('localhost', ports[self.dancerId-1]))
+        self.socket.connect(('localhost', LOCAL_PORTS[self.dancerId-1]))
         print('Successfully connected to Ultra96!')
         self.clientConnectedFlag.set()
         self.send_message(self.dancerId)
@@ -76,7 +78,7 @@ class LaptopClient(threading.Thread):
 
             self.send_message('sync')
             offsets_array = []
-            for i in range(10):
+            for i in range(globals_.NUM_CLOCK_SYNC_ITERATIONS):
                 data = self.receive_message()
                 if data != 'ready':
                     print('Clock sync ready packet wrong')
@@ -102,7 +104,7 @@ class LaptopClient(threading.Thread):
                 self.send_message('end')
 
             self.clock_offset = sum(offsets_array) / len(offsets_array)
-            self.clock_offset_history.append(sum(offsets_array) / len(offsets_array))
+            # self.clock_offset_history.append(sum(offsets_array) / len(offsets_array))
             print(f'Average Clock Offset: {self.clock_offset}')
             self.sendMsgLock.release()
 
@@ -120,7 +122,7 @@ class LaptopClient(threading.Thread):
         clock_sync_thread.start()
         # time.sleep(1)
         while 1:
-        # for i in range(1400):
+        # for i in range(14):
             # receive data indicating server is ready
             sample = []
             timestamp = None
@@ -129,7 +131,6 @@ class LaptopClient(threading.Thread):
                 # print(f'data from bluno: {data}')
                 # print(type(data))
                 
-                # TODO perform check for packet indicating start of dance move. 
                 # If data is the packet containing timestamp of start of dance move i.e. timestamp + 6 sensor values, call resetCumData, clear sample and append to sample
                 if len(data) == 7: 
                     resetCumData()
@@ -148,40 +149,43 @@ class LaptopClient(threading.Thread):
                     print(f'Sample length: {len(sample)}')
 
             print(f'enough sample length: {sample}')
-
-            # print(sample)
                         
             # send sensor readings to dashboard
             print('send_sensor to dashboard')
             # send_sensor(self.dancerId, sample)
 
             # preprocess data before sending to ultra96
-            # vector = append(sample)
-            # print(f'vector shape: {vector.shape}')
-            test_vector = [float(int(self.dancerId)) for x in range(240)]
-            # for v in vector:
-            #     vector_string = ','.join(list(map(str, list(v.tolist()))))
-            #     time.sleep(0.1)
-            #     self.send_message(vector_string)
-
-            # if start of dance move
-            if timestamp is not None:
-                test_vector.insert(0, timestamp)
+            vector = append(sample)
+            print(f'vector shape: {vector.shape}')
             
-            print(f'Length of vector to send: {len(test_vector)}')
+            for v in vector:
+                if timestamp is not None:
+                    v.insert(0, timestamp)
+                    timestamp = None
+                print(f'Length of vector to send: {len(v)}')
+                vector_string = ','.join(list(map(str, list(v.tolist()))))
+                
+                self.sendMsgLock.acquire()
+                self.send_message(vector_string)
+                self.sendMsgLock.release()
+                time.sleep(0.1)
+
+            # ========== FOR TESTING ============
+            # test_vector = [float(int(self.dancerId)) for x in range(200)]
+            # # if start of dance move
+            # if timestamp is not None:
+            #     test_vector.insert(0, timestamp)
             
-            test = ','.join(list(map(str, test_vector)))
-
-            self.sendMsgLock.acquire()
-            self.send_message(test)
-            self.sendMsgLock.release()
-
+            # print(f'Length of vector to send: {len(test_vector)}')
             
-            # self.send_message(timestamp)
-            # time.sleep(1)
+            # test = ','.join(list(map(str, test_vector)))
 
-            # command = self.receive_message()
-        print(f'End of testing, clock offset history: {self.clock_offset_history}')
+            # self.sendMsgLock.acquire()
+            # self.send_message(test)
+            # self.sendMsgLock.release()
+            # ========== FOR TESTING ============
+        
+        # print(f'End of testing, clock offset history: {self.clock_offset_history}')
         self.close()
 
     def close(self):
@@ -196,7 +200,7 @@ def main():
         sys.exit()
     dancerId = int(sys.argv[1])
     global LOCAL_PORT
-    LOCAL_PORT = ports[dancerId - 1]
+    LOCAL_PORT = LOCAL_PORTS[dancerId - 1]
     client = LaptopClient(dancerId)
     client.start()
 

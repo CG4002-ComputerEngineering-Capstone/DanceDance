@@ -116,7 +116,7 @@ class MyDelegate(btle.DefaultDelegate):
         # self.immediatePrevDancingState = False # dancing state right before timer event happen
         self.timer = None
         self.consecutiveIdlePacketsCount = 0
-        self.consecutiveIdlePacketsThreshold = 10
+        self.consecutiveIdlePacketsThreshold = globals_.CONSECUTIVE_IDLE_PACKETS_THRESHOLD
 
     def exitDancingState(self):
         print('********************************************************************')
@@ -213,7 +213,7 @@ class MyDelegate(btle.DefaultDelegate):
                                         print(f'Start of dance move')
                                         print('********************************************************************')
                                         packet_list = list(packet)
-                                        sensor_values = packet_list[1:7]
+                                        sensor_values = packet_list[1:4] + packet_list[5:7]
                                         globals_.dataQueue.put([timestamp] + sensor_values)
                                     
                                 elif self.inDancingState == True:
@@ -228,12 +228,12 @@ class MyDelegate(btle.DefaultDelegate):
                                         # else, continue to add packets to queue
                                         else: 
                                             packet_list = list(packet)
-                                            sensor_values = packet_list[1:7]
+                                            sensor_values = packet_list[1:4] + packet_list[5:7]
                                             globals_.dataQueue.put(sensor_values)
                                     else:
                                         
                                         packet_list = list(packet)
-                                        sensor_values = packet_list[1:7]
+                                        sensor_values = packet_list[1:4] + packet_list[5:7]
                                         globals_.dataQueue.put(sensor_values)
                                     # print(f'added sensor values to queue {sensor_values}')
                                     # time.sleep(0.1)
