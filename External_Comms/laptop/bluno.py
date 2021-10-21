@@ -101,6 +101,12 @@ def checksum_emg(packet):
         return True
     return False
 
+def checksum_direction(packet):
+    check = packet[0] ^ packet[1] ^ packet[2] ^ packet[3] ^ packet[4] ^ packet[5] ^ packet[6] ^ packet[7] ^ packet[8] ^ packet[9] ^ packet[10]
+    if check == packet[11]:
+        return True
+    return False
+
 
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self, params):
@@ -252,19 +258,28 @@ class MyDelegate(btle.DefaultDelegate):
 
                     elif packet_type == 3 and handshake_map[addr] == True:
                         packet = struct.unpack("<bhhhhhhhhbh", packet)
-                        # print(Data_Header)
-                        # print("Receiving data from beetle ID: ", i)
+                        print(Data_Header)
+                        print("Receiving EMG data from beetle ID: ", i)
                         if(checksum_emg(packet)):
-                            print("Checksum correct!")
-
-                            # send emg data to dashboard server
-                            # send_emg(packet[1:3])
-
+                            # print("Checksum correct for EMG !")
+                            send_emg(data[1:4])
                         # print(packet)
                         # print(Data_Header)
                         # print(newline)
 
                         #print(packet)
+
+
+                    elif packet_type == 4 and handshake_map[addr] == True:
+                        packet = struct.unpack("<bbbhhhhhhhbh", packet)
+                        print(Data_Header)
+                        print("Receiving DIR data from beetle ID: ", i)
+                        if(checksum_direction(packet)):
+                            print("Checksum correct for DIR !")
+                            # TODO send position change to dashboard and ultra96
+                        # print(packet)
+                        # print(Data_Header)
+                        # print(newline)
 
                         
 
