@@ -24,7 +24,7 @@
 3. Run main.py script with dancerId as parameter  
 `python3 main.py [dancerId]` e.g. `python3 main.py 1`
 
-## Steps for self-testing ##
+## Steps for self-testing (Ultra96 with Laptop + Bluno, no Eval Server) ##
 ### Start server on Ultra96 ###
 1. SSH into Sunfire   
 (from terminal) `ssh <your NUSNET>@sunfire.comp.nus.edu.sg` e.g. `ssh e1234567@sunfire.comp.nus.edu.sg`
