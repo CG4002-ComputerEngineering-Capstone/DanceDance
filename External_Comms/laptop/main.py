@@ -41,12 +41,20 @@ if __name__ == '__main__':
     dancerId = int(sys.argv[1])
     handleServer = client.LaptopClient(dancerId, clientConnectedFlag)
     handleServer.start()
-    # for i in range(1000):
-    #     dummy_data = ','.join([str(random.randint(-20000, 20000)) for x in range(6)])
-    #     globals_.dataQueue.put(dummy_data)
 
     clientConnectedFlag.wait()
-    # time.sleep(5)
+    print('Clients connected, waiting for bluetooth')
+    time.sleep(5)
+
+    # for i in range(10):
+    #     for j in range(140):
+    #         if j == 1:
+    #             dummy_data = [time.time()] + [int(dancerId) for x in range(6)]
+    #         else:
+    #             dummy_data = [int(dancerId) for x in range(6)]
+
+    #         globals_.dataQueue.put(dummy_data)
+    #         time.sleep(0.05)
     
     for addr in address:
         count = 0

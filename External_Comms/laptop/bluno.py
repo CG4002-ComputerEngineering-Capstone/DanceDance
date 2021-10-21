@@ -7,6 +7,7 @@ import time
 import csv
 
 import globals_
+from dashboard import send_emg
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
@@ -108,6 +109,8 @@ class MyDelegate(btle.DefaultDelegate):
         self.inDancingState = False
         # self.immediatePrevDancingState = False # dancing state right before timer event happen
         self.timer = None
+        self.consecutiveIdlePacketsCount = 0
+        self.consecutiveIdlePacketsThreshold = 10
 
     def exitDancingState(self):
         print('********************************************************************')
@@ -194,6 +197,7 @@ class MyDelegate(btle.DefaultDelegate):
                                 print(f'isDancingState: {self.inDancingState}')
                                 if self.inDancingState == False:
                                     if packet[7] == 1:
+                                        timestamp = time.time()
                                         self.inDancingState = True
                                         # self.timer = threading.Timer(4.2, self.exitDancingState)
                                         # self.timer.start()
@@ -202,18 +206,28 @@ class MyDelegate(btle.DefaultDelegate):
                                         print('********************************************************************')
                                         print(f'Start of dance move')
                                         print('********************************************************************')
-                                        globals_.dataQueue.put(['start'])
-                                    # else:
-                                    #     self.immediatePrevDancingState = False
-                                    
-                                if self.inDancingState == True:
-                                    # add packet to queue to be sent to server for 6 seconds
-                                    if packet[7] == 0:
-                                        print('setting dancing state to false')
-                                        self.inDancingState = False
-                                    else:
                                         packet_list = list(packet)
-                                        sensor_values = [packet_list[7]] + packet_list[1:6]
+                                        sensor_values = packet_list[1:7]
+                                        globals_.dataQueue.put([timestamp] + sensor_values)
+                                    
+                                elif self.inDancingState == True:
+                                    # add packet to queue to be sent to server
+                                    if packet[7] == 0:
+                                        self.consecutiveIdlePacketsCount += 1
+                                        # if 10 consecutive idle packets has been received, set dancing state to false
+                                        if self.consecutiveIdlePacketsCount >= self.consecutiveIdlePacketsThreshold:
+                                            self.inDancingState = False
+                                            self.consecutiveIdlePacketsCount = 0
+
+                                        # else, continue to add packets to queue
+                                        else: 
+                                            packet_list = list(packet)
+                                            sensor_values = packet_list[1:7]
+                                            globals_.dataQueue.put(sensor_values)
+                                    else:
+                                        
+                                        packet_list = list(packet)
+                                        sensor_values = packet_list[1:7]
                                         globals_.dataQueue.put(sensor_values)
                                     # print(f'added sensor values to queue {sensor_values}')
                                     # time.sleep(0.1)
@@ -242,8 +256,9 @@ class MyDelegate(btle.DefaultDelegate):
                         # print("Receiving data from beetle ID: ", i)
                         if(checksum_emg(packet)):
                             print("Checksum correct!")
-                            # add packet to queue to be sent to server
-                            # globals_.dataQueue.put(packet[1:10])
+
+                            # send emg data to dashboard server
+                            # send_emg(packet[1:3])
 
                         # print(packet)
                         # print(Data_Header)
