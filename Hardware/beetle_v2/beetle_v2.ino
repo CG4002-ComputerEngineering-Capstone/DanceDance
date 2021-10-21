@@ -1,12 +1,13 @@
 #include "Wire.h"
 
 #define MPU_SAMPLING_RATE 20       // 20Hz
-#define MYOWARE_SAMPLING_RATE 500  // 500Hz
+#define MYOWARE_SAMPLING_RATE 100  // 500Hz
 
 #define HANDSHAKE 'h'
 #define ACK 1
 #define IMU_DATA 2
 #define EMG_DATA 3
+#define DIR_DATA 4
 
 int c = 0;
 const int MPU = 0x68; //  MPU6050 I2C address
@@ -64,7 +65,7 @@ struct Emgpacket {
   int8_t type;
   int16_t data_1;
   int16_t data_2;
-  int16_t padding_1;
+  int16_t data_3;
   int16_t padding_2;
   int16_t padding_3;
   int16_t padding_4;
@@ -73,6 +74,22 @@ struct Emgpacket {
   int8_t padding_7;
   int16_t checksum;
   
+};
+
+
+struct Directionpacket {
+  int8_t type;
+  int8_t step_direction;
+  int8_t num_steps;
+  int16_t padding_1;
+  int16_t padding_2;
+  int16_t padding_3;
+  int16_t padding_4;
+  int16_t padding_5;
+  int16_t padding_6;
+  int16_t padding_7;
+  int8_t padding_8;
+  int16_t checksum;
 };
 
 void setup() {
@@ -139,19 +156,22 @@ void loop() {
     }
     
     myoware[j] = myowareSensor - movingAverage;
-    /*
+    
     if(j == 100) {
       RMS = calculateRMS();
       MAV = calculateMAV();
       ZCR = calculateZCR();
+      sendemg();
+      /*
       Serial.print("RMS: ");
       Serial.print(RMS);
       Serial.print(" MAV: ");
       Serial.print(MAV);
       Serial.print(" ZCR: ");
       Serial.println(ZCR);      
+      */
     }
-    */
+    
     previousTimeMyoware = currentTime;
     j++;
   }
@@ -351,9 +371,9 @@ void sendack() {
 void sendemg() {
   Emgpacket packet;
   packet.type = EMG_DATA;
-  packet.data_1 = 5000;
-  packet.data_2 = 7000;
-  packet.padding_1 = 0;
+  packet.data_1 = int16_t(RMS);
+  packet.data_2 = int16_t(MAV);
+  packet.data_3 = int16_t(ZCR);
   packet.padding_2 = 0;
   packet.padding_3 = 0;
   packet.padding_4 = 0;
@@ -361,13 +381,35 @@ void sendemg() {
   packet.padding_6 = 0;
   packet.padding_7 = 0;
   packet.checksum = getEmgChecksum(packet);
-  Serial.write((uint8_t *)&packet, sizeof(packet));
-  delay(10);
+  Serial.write((uint8_t *)&packet, sizeof(packet)); 
+}
+
+void senddirection(){
+  Directionpacket packet;
+  packet.type = DIR_DATA;
+  packet.step_direction = 0;
+  packet.num_steps = 0;
+  packet.padding_1 = 0;
+  packet.padding_2 = 0;
+  packet.padding_3 = 0;
+  packet.padding_4 = 0;
+  packet.padding_5 = 0;
+  packet.padding_6 = 0;
+  packet.padding_7 = 0;
+  packet.padding_8 = 0;
+  packet.checksum = getDirectionChecksum(packet);
   
 }
 
+
+
 int32_t getChecksum(Datapacket packet){
   return packet.type ^ packet.aX ^ packet.aY ^ packet.aZ ^ packet.y ^ packet.p ^ packet.r ^ packet.start_move;
+}
+
+long getDirectionChecksum(Directionpacket packet){
+  return packet.type ^ packet.step_direction ^ packet.num_steps ^ packet.padding_1 ^ packet.padding_2 ^ packet.padding_3 ^ packet.padding_4 ^ packet.padding_5 ^ packet.padding_6 ^ packet.padding_7 ^ packet.padding_8;
+    
 }
 
 long getAckChecksum(Ackpacket packet){
@@ -375,5 +417,5 @@ long getAckChecksum(Ackpacket packet){
 }
 
 long getEmgChecksum(Emgpacket packet){
-  return packet.type ^ packet.data_1 ^ packet.data_2 ^ packet.padding_1 ^ packet.padding_2 ^ packet.padding_3 ^ packet.padding_4 ^ packet.padding_5 ^ packet.padding_6 ^ packet.padding_7;
+  return packet.type ^ packet.data_1 ^ packet.data_2 ^ packet.data_3 ^ packet.padding_2 ^ packet.padding_3 ^ packet.padding_4 ^ packet.padding_5 ^ packet.padding_6 ^ packet.padding_7;
 }

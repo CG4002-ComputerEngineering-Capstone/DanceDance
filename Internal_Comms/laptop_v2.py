@@ -8,10 +8,10 @@ import csv
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
-#BEETLE_1 = "b0:b1:13:2d:b5:13"
+BEETLE_1 = "b0:b1:13:2d:d4:86"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
 #BEETLE_0 = "b0:b1:13:2d:b4:19"
-BEETLE_3 = "b0:b1:13:2d:b4:7d"
+#BEETLE_3 = "b0:b1:13:2d:b4:7d"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -21,7 +21,7 @@ newline = "\n"
 
  
 csv_time = 0
-address = [BEETLE_3]
+address = [BEETLE_1]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}
@@ -98,6 +98,13 @@ def checksum_emg(packet):
         return True
     return False
 
+def checksum_direction(packet):
+    check = packet[0] ^ packet[1] ^ packet[2] ^ packet[3] ^ packet[4] ^ packet[5] ^ packet[6] ^ packet[7] ^ packet[8] ^ packet[9] ^ packet[10]
+    if check == packet[11]:
+        return True
+    return False
+
+
 
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self, params):
@@ -165,7 +172,7 @@ class MyDelegate(btle.DefaultDelegate):
                         #print(Data_Header)
                         #print("Receiving data from beetle ID: ", i)
                         if(checksum_imu(packet)):
-                            print("Checksum correct!")
+                            #print("Checksum correct!")
                             #print(packet)
                             #print(Data_Header)
                             #print(newline)
@@ -184,7 +191,7 @@ class MyDelegate(btle.DefaultDelegate):
                             #print(train_data)
                             print(type(real_data))
                             print(time.time() - csv_time)
-                            with open("trial.csv", "w", newline="") as f:
+                            with open("jamesbond_matthew_4_.csv", "w", newline="") as f:
                                 writer = csv.writer(f)
                                 writer.writerows(train_data)
                                             
@@ -192,14 +199,27 @@ class MyDelegate(btle.DefaultDelegate):
                     elif packet_type == 3 and handshake_map[addr] == True:
                         packet = struct.unpack("<bhhhhhhhhbh", packet)
                         print(Data_Header)
-                        print("Receiving data from beetle ID: ", i)
+                        print("Receiving EMG data from beetle ID: ", i)
                         if(checksum_emg(packet)):
-                            print("Checksum correct!")
+                            print("Checksum correct for EMG !")
                         print(packet)
                         print(Data_Header)
                         print(newline)
 
                         #print(packet)
+
+
+                    elif packet_type == 4 and handshake_map[addr] == True:
+                        packet = struct.unpack("<bbbhhhhhhhbh", packet)
+                        print(Data_Header)
+                        print("Receiving DIR data from beetle ID: ", i)
+                        if(checksum_direction(packet)):
+                            print("Checksum correct for DIR !")
+                        print(packet)
+                        print(Data_Header)
+                        print(newline)
+
+
 
                         
 
