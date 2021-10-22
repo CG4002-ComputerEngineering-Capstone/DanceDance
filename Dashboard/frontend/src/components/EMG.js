@@ -10,7 +10,9 @@ function EMG({emg}) {
           EMG
         </Typography>
         <Typography align="center" variant="h5">
-          {emg}mV
+          {emg[0]}|
+          {emg[1]}|
+          {emg[2]}mV
         </Typography>
       </CardContent>
     </Card>

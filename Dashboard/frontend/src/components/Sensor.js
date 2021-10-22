@@ -6,20 +6,27 @@ import { useCallback, useEffect } from "react";
 import LineChart from "./LineChart";
 import Queue from "./Queue";
 
-const defaultSensorData = {
-  accelerometer: [],
-  gyroscope: []
-}
+const defaultSensorData = [
+  {
+    accelerometer: new Queue(),
+    gyroscope: new Queue()
+  },
+  {
+    accelerometer: new Queue(),
+    gyroscope: new Queue()
+  },
+  {
+    accelerometer: new Queue(),
+    gyroscope: new Queue()
+  }
+]
 
 var sensorData = defaultSensorData;
 
-var accelerometer = new Queue();
-var gyroscope = new Queue();
-
-function Sensor({isPaused, dancerNum}) {
-  const GetSensor = useCallback(async (collectionName) => {
-    console.log(collectionName + " update");
-    const response = await fetch("https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/GetSensor?collectionName=" + collectionName);
+function Sensor({isPaused}) {
+  const GetSensor = useCallback(async (dancerId) => {
+    console.log("Sensor" + dancerId + " update");
+    const response = await fetch("https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/GetSensor?dancerId=" + dancerId);
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
       if (data) {
@@ -29,11 +36,8 @@ function Sensor({isPaused, dancerNum}) {
             gyroscope: data.gyroscope
           }
         );
-        if (JSON.stringify(formatted) !== JSON.stringify(sensorData)) {
-          formatted.accelerometer.forEach(element => accelerometer.enqueue(element));
-          formatted.gyroscope.forEach(element => gyroscope.enqueue(element));
-          sensorData = formatted;
-        }
+        formatted.accelerometer.forEach(element => sensorData[dancerId - 1].accelerometer.enqueue(element));
+        formatted.gyroscope.forEach(element => sensorData[dancerId - 1].gyroscope.enqueue(element));
       }
       return;
     } else {
@@ -48,26 +52,28 @@ function Sensor({isPaused, dancerNum}) {
       clearInterval(interval);
     } else {
       interval = setInterval(() => {
-        GetSensor("Sensor" + dancerNum);
+        GetSensor("1");
+        GetSensor("2");
+        GetSensor("3");
       }, 1000);
     }
     return () => {
       clearInterval(interval);
     };
-  }, [isPaused, dancerNum, GetSensor]);
+  }, [isPaused, GetSensor]);
 
-  function GetLatestAccelerometer() {
-    return accelerometer.dequeue();
+  function GetLatestAccelerometer(dancerId) {
+    return sensorData[dancerId - 1].accelerometer.dequeue();
   }
 
-  function GetLatestGyroscope() {
-    return gyroscope.dequeue();
+  function GetLatestGyroscope(dancerId) {
+    return sensorData[dancerId - 1].gyroscope.dequeue();
   }
 
   return (
     <Container maxWidth='md'>
       <Typography align="center" variant="h5" gutterBottom={true}>
-        Dancer {dancerNum}
+        Dancer 1
       </Typography>
       <Grid
         container
@@ -77,13 +83,53 @@ function Sensor({isPaused, dancerNum}) {
           <Typography align="center">
             Accelerometer
           </Typography>
-          <LineChart GetLatestData={GetLatestAccelerometer} />
+          <LineChart dancerId={1} GetLatestData={GetLatestAccelerometer} />
         </Grid>
         <Grid item xs={6}>
           <Typography align="center">
             Gyroscope
           </Typography>
-          <LineChart GetLatestData={GetLatestGyroscope} />
+          <LineChart dancerId={1} GetLatestData={GetLatestGyroscope} />
+        </Grid>
+      </Grid>
+      <Typography align="center" variant="h5" gutterBottom={true}>
+        Dancer 2
+      </Typography>
+      <Grid
+        container
+        spacing={3}
+      >
+        <Grid item xs={6}>
+          <Typography align="center">
+            Accelerometer
+          </Typography>
+          <LineChart dancerId={2} GetLatestData={GetLatestAccelerometer} />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography align="center">
+            Gyroscope
+          </Typography>
+          <LineChart dancerId={2} GetLatestData={GetLatestGyroscope} />
+        </Grid>
+      </Grid>
+      <Typography align="center" variant="h5" gutterBottom={true}>
+        Dancer 3
+      </Typography>
+      <Grid
+        container
+        spacing={3}
+      >
+        <Grid item xs={6}>
+          <Typography align="center">
+            Accelerometer
+          </Typography>
+          <LineChart dancerId={3} GetLatestData={GetLatestAccelerometer} />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography align="center">
+            Gyroscope
+          </Typography>
+          <LineChart dancerId={3} GetLatestData={GetLatestGyroscope} />
         </Grid>
       </Grid>
     </Container>

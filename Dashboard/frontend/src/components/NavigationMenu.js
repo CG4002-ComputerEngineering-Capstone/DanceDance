@@ -35,27 +35,11 @@ function NavigationMenu() {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton component={Link} to={"/Dancer1"}>
+            <ListItemButton component={Link} to={"/Sensor"}>
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
-              <ListItemText primary={"Dancer 1"} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem>
-            <ListItemButton component={Link} to={"/Dancer2"}>
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Dancer 2"} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem>
-            <ListItemButton component={Link} to={"/Dancer3"}>
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Dancer 3"} />
+              <ListItemText primary={"Sensor"} />
             </ListItemButton>
           </ListItem>
           <ListItem>
