@@ -132,7 +132,7 @@ class LaptopClient(threading.Thread):
                 # print(type(data))
                 
                 # If data is the packet containing timestamp of start of dance move i.e. timestamp + 6 sensor values, call resetCumData, clear sample and append to sample
-                if len(data) == 7: 
+                if len(data) == 6: 
                     resetCumData()
                     sample = []
                     print(f'RESET SAMPLE - sample length: {len(sample)}')
@@ -159,11 +159,12 @@ class LaptopClient(threading.Thread):
             print(f'vector shape: {vector.shape}')
             
             for v in vector:
+                v = list(v)
                 if timestamp is not None:
                     v.insert(0, timestamp)
                     timestamp = None
                 print(f'Length of vector to send: {len(v)}')
-                vector_string = ','.join(list(map(str, list(v.tolist()))))
+                vector_string = ','.join(list(map(str, v)))
                 
                 self.sendMsgLock.acquire()
                 self.send_message(vector_string)
