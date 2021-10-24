@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 
 Chart.register(StreamingPlugin);
 
-function LineChart({GetLatestData}) {
+function LineChart({dancerId, GetLatestData}) {
   return (
     <Line
       data={{
@@ -57,9 +57,9 @@ function LineChart({GetLatestData}) {
               delay: 1000,
               pause: false,
               ttl: undefined,
-              frameRate: 60,
+              frameRate: 30,
               onRefresh: chart => {
-                var data = GetLatestData();
+                var data = GetLatestData(dancerId);
                 if (data) {
                   chart.data.datasets[0].data.push({x: DateTime.now(), y: parseInt(data.x)});
                   chart.data.datasets[1].data.push({x: DateTime.now(), y: parseInt(data.y)});

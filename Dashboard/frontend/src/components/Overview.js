@@ -7,16 +7,14 @@ import EMG from "./EMG";
 import SyncDelay from "./SyncDelay";
 import { Typography } from "@mui/material";
 
-const defaultPredictionData = [
-  {
-    position: [1, 2, 3],
-    move: ["-", "-", "-"],
-    syncDelay: 0
-  }
-];
+const defaultPredictionData = {
+  move: ["-", "-", "-"],
+  position: [1, 2, 3],
+  syncDelay: 0
+}
 
 const defaultEMGData = {
-  emg: 0
+  emg: [0, 0, 0]
 }
 
 function Overview({isPaused}) {
@@ -28,20 +26,15 @@ function Overview({isPaused}) {
     const response = await fetch("https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/GetPrediction");
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
-      if (data.length > 0) {
-        const formatted = [];
-        data.forEach(element =>
-          formatted.push(
-            {
-              position: JSON.parse(element.position),
-              move: element.move,
-              syncDelay: JSON.parse(element.syncDelay)
-            }
-          )
+      if (data) {
+        console.log(data);
+        setPredictionData(
+          {
+            move: data.move,
+            position: JSON.parse(data.position),
+            syncDelay: JSON.parse(data.syncDelay)
+          }
         );
-        setPredictionData(formatted);
-      } else {
-        setPredictionData(defaultPredictionData);
       }
       return;
     } else {
@@ -57,15 +50,8 @@ function Overview({isPaused}) {
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
       if (data) {
-        setEMGData(
-          {
-            emg: data.emg
-          }
-        );
-      } else {
-        setEMGData(defaultEMGData);
+        setEMGData({emg: JSON.parse(data.emg)});
       }
-
       return;
     } else {
       // Handle errors
@@ -75,17 +61,22 @@ function Overview({isPaused}) {
   }
 
   useEffect(() => {
-    let interval = null;
+    let predictionInterval = null;
+    let emgInterval = null
     if (isPaused) {
-      clearInterval(interval);
+      clearInterval(predictionInterval);
+      clearInterval(emgInterval);
     } else {
-      interval = setInterval(() => {
+      predictionInterval = setInterval(() => {
         GetPrediction();
+      }, 1000);
+      emgInterval = setInterval(() => {
         GetEMG();
-      }, 2000);
+      }, 500);
     }
     return () => {
-      clearInterval(interval);
+      clearInterval(predictionInterval);
+      clearInterval(emgInterval);
     };
   }, [isPaused]);
 
@@ -99,16 +90,16 @@ function Overview({isPaused}) {
         spacing={3}
       >
         <Grid item xs={4}>
-          <Dancer dancerNumber={predictionData[predictionData.length - 1].position[0]} currentMove={predictionData[predictionData.length - 1].move[0]} />
+          <Dancer dancerNumber={predictionData.position[0]} currentMove={predictionData.move[0]} />
         </Grid>
         <Grid item xs={4}>
-          <Dancer dancerNumber={predictionData[predictionData.length - 1].position[1]} currentMove={predictionData[predictionData.length - 1].move[1]} />
+          <Dancer dancerNumber={predictionData.position[1]} currentMove={predictionData.move[1]} />
         </Grid>
         <Grid item xs={4}>
-          <Dancer dancerNumber={predictionData[predictionData.length - 1].position[2]} currentMove={predictionData[predictionData.length - 1].move[2]} />
+          <Dancer dancerNumber={predictionData.position[2]} currentMove={predictionData.move[2]} />
         </Grid>
         <Grid item xs={6}>
-          <SyncDelay syncDelay={predictionData[predictionData.length - 1].syncDelay} />
+          <SyncDelay syncDelay={predictionData.syncDelay} />
         </Grid>
         <Grid item xs={6}>
           <EMG emg={emgData.emg} />

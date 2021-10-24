@@ -19,7 +19,7 @@ import Sensor from './Sensor';
 function Dashboard() {
   const [isPaused, setIsPaused] = useState(true);
 
-  const ToggleUpdate = () => {
+  const TogglePaused = () => {
     setIsPaused(!isPaused);
   }
 
@@ -29,7 +29,7 @@ function Dashboard() {
         <CssBaseline />
         <NavigationBar
           isPaused={isPaused}
-          ToggleUpdate={ToggleUpdate}
+          TogglePaused={TogglePaused}
         />
         <NavigationMenu />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -37,9 +37,7 @@ function Dashboard() {
           <Switch>
             <Route exact path="/" render={() => {return (<Redirect to="/Overview" />)}} />
             <Route path="/Overview" render={() => <Overview isPaused={isPaused} />} />
-            <Route path="/Dancer1" render={() => <Sensor isPaused={isPaused} dancerNum={1} />} />
-            <Route path="/Dancer2" render={() => <Sensor isPaused={isPaused} dancerNum={2} />} />
-            <Route path="/Dancer3" render={() => <Sensor isPaused={isPaused} dancerNum={3} />} />
+            <Route path="/Sensor" render={() => <Sensor isPaused={isPaused} />} />
             <Route path="/Analytics" render={() => <Analytics />} />
           </Switch>
         </Box>

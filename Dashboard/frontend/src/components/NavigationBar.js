@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography';
 
-function NavigationBar(props) {
+function NavigationBar({isPaused, TogglePaused}) {
   async function ResetDatabase() {
     const response = await fetch("https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/ResetDatabase", {method: 'DELETE'});
     console.log(response);
@@ -18,10 +18,10 @@ function NavigationBar(props) {
         </Typography>
         <Button
           variant="contained"
-          onClick={props.ToggleUpdate}
+          onClick={TogglePaused}
         >
           {
-            props.isPaused === true ? "Start" : "Stop"
+            isPaused === true ? "Start" : "Stop"
           }
         </Button>
         <Button

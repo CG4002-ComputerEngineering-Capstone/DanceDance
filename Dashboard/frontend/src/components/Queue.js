@@ -5,11 +5,9 @@ function Queue () {
   };
   this.enqueue = function(element) {
     collection.push(element);
-    /*
     if (collection.length > 80) {
         return collection.shift();
     }
-    */
   };
   this.dequeue = function() {
       return collection.shift(); 
