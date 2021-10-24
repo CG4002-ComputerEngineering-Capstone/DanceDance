@@ -74,7 +74,9 @@ class LaptopClient(threading.Thread):
                 sys.exit()
             self.clockSyncFlag.set()
 
+            print(f'[clock sync thread] Acquiring sendMsgLock...')
             self.sendMsgLock.acquire()
+            print(f'[clock sync thread] Acquired sendMsgLock!')
 
             self.send_message('sync')
             offsets_array = []
@@ -106,7 +108,9 @@ class LaptopClient(threading.Thread):
             self.clock_offset = sum(offsets_array) / len(offsets_array)
             # self.clock_offset_history.append(sum(offsets_array) / len(offsets_array))
             print(f'Average Clock Offset: {self.clock_offset}')
+            print(f'[clock sync thread] Releasing sendMsgLock...')
             self.sendMsgLock.release()
+            print(f'[clock sync thread] Released sendMsgLock!')
 
     def run(self):
         self.setup_connection()
@@ -166,9 +170,13 @@ class LaptopClient(threading.Thread):
                 print(f'Length of vector to send: {len(v)}')
                 vector_string = ','.join(list(map(str, v)))
                 
+                print(f'[main client thread] Acquiring sendMsgLock...')
                 self.sendMsgLock.acquire()
+                print(f'[main client thread] Acquired sendMsgLock!')
                 self.send_message(vector_string)
+                print(f'[main client thread] Releasing sendMsgLock...')
                 self.sendMsgLock.release()
+                print(f'[main client thread] Released sendMsgLock!')
                 time.sleep(0.1)
 
             # ========== FOR TESTING ============
