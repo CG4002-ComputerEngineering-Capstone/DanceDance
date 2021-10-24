@@ -215,6 +215,7 @@ class MyDelegate(btle.DefaultDelegate):
                                         packet_list = list(packet)
                                         sensor_values = packet_list[1:4] + packet_list[5:7]
                                         globals_.dataQueue.put([timestamp] + sensor_values)
+                                        self.consecutiveIdlePacketsCount = 0
                                     
                                 elif self.inDancingState == True:
                                     # add packet to queue to be sent to server
@@ -231,7 +232,7 @@ class MyDelegate(btle.DefaultDelegate):
                                             sensor_values = packet_list[1:4] + packet_list[5:7]
                                             globals_.dataQueue.put(sensor_values)
                                     else:
-                                        
+                                        self.consecutiveIdlePacketsCount = 0
                                         packet_list = list(packet)
                                         sensor_values = packet_list[1:4] + packet_list[5:7]
                                         globals_.dataQueue.put(sensor_values)
