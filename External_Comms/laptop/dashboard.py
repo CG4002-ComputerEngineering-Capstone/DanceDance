@@ -171,7 +171,7 @@ def send_sensor(dancerId, sensorData) :
                 "y": sample[4],
                 "z": sample[5],
             })
-        requests.post(POST_SENSOR_API_ENDPOINT + f'?collectionName=Sensor{dancerId}', json.dumps({"accelerometer": accelData, "gyroscope": gyroData}), headers)
+        requests.post(POST_SENSOR_API_ENDPOINT + f'?dancerId={dancerId}', json.dumps({"accelerometer": accelData, "gyroscope": gyroData}), headers)
         print(f"\nSent Sensor {dancerId} Data\n")
     except: 
         print(f"\nFailed to send Sensor {dancerId} Data\n")
