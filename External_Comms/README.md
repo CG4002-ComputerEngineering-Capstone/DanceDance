@@ -43,5 +43,14 @@
 `pipenv shell` (from External_Comms directory)
 2. Go to laptop directory  
 `cd laptop`
-3. Run main.py script with dancerId = 1  
+3. Scan for your beetle's mac address by searching for "bluno" 
+`bluetoothctl`
+`scan on`
+4. Exit bluetoothctl
+`exit`
+5. Make change to main.py: lines _ and _ by replacing with your beetle's mac address
+`vim main.py`
+7. Do the same for bluno.py: lines _ and _
+`vim bluno.py`
+9. Run main.py script with dancerId = 1  
 `python3 main.py 1`
