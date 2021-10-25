@@ -18,6 +18,11 @@ LOCAL_PORTS = [65432, 65431, 65430]
 LOCAL_PORT = 65432
 REMOTE_PORT = 65432
 
+STEP_DIRECTION_MAPPING = {
+    0: 'L',
+    1: 'R'
+}
+
 
 class LaptopClient(threading.Thread):
     def __init__(self, dancerId, clientConnectedFlag):
@@ -135,8 +140,20 @@ class LaptopClient(threading.Thread):
                 # print(f'data from bluno: {data}')
                 # print(type(data))
                 
-                # If data is the packet containing timestamp of start of dance move i.e. timestamp + 6 sensor values, call resetCumData, clear sample and append to sample
-                if len(data) == 6: 
+                if len(data) == 1:
+                    # positional change packet
+                    step_direction = STEP_DIRECTION_MAPPING[data]
+                    print(f'[main client thread] Acquiring sendMsgLock...')
+                    self.sendMsgLock.acquire()
+                    print(f'[main client thread] Acquired sendMsgLock! sending step_direction "{step_direction}"')
+
+                    self.send_message(step_direction)
+
+                    print(f'[main client thread] Releasing sendMsgLock...')
+                    self.sendMsgLock.release()
+                    print(f'[main client thread] Released sendMsgLock!')
+                elif len(data) == 6: 
+                    # If data is the packet containing timestamp of start of dance move i.e. timestamp + 6 sensor values, call resetCumData, clear sample and append to sample
                     resetCumData()
                     sample = []
                     print(f'RESET SAMPLE - sample length: {len(sample)}')
@@ -149,6 +166,7 @@ class LaptopClient(threading.Thread):
                     sample.append(data[1:])
                     print(f'Sample length: {len(sample)}')
                 else:
+                    # normal IMU sensor data packet
                     sample.append(data)
                     print(f'Sample length: {len(sample)}')
 

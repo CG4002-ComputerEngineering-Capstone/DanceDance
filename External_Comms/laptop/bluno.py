@@ -278,6 +278,7 @@ class MyDelegate(btle.DefaultDelegate):
                         if(checksum_direction(packet)):
                             print("Checksum correct for DIR !")
                             # TODO send position change to dashboard and ultra96
+                            globals_.dataQueue.put(packet[1])
                         # print(packet)
                         # print(Data_Header)
                         # print(newline)
