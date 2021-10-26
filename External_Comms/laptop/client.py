@@ -174,7 +174,7 @@ class LaptopClient(threading.Thread):
                         
             # send sensor readings to dashboard
             print('send_sensor to dashboard')
-            send_sensor(self.dancerId, sample)
+            #send_sensor(self.dancerId, sample)
 
             # preprocess data before sending to ultra96
             vector = append(sample)
