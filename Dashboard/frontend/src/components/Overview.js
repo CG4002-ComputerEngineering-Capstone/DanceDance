@@ -27,14 +27,19 @@ function Overview({isPaused}) {
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
       if (data) {
-        console.log(data);
-        setPredictionData(
-          {
-            move: data.move,
-            position: JSON.parse(data.position),
-            syncDelay: JSON.parse(data.syncDelay)
-          }
-        );
+        try {
+          setPredictionData(
+            {
+              move: data.move,
+              position: JSON.parse(data.position),
+              syncDelay: JSON.parse(data.syncDelay)
+            }
+          );
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        setPredictionData(defaultPredictionData);
       }
       return;
     } else {
@@ -50,7 +55,13 @@ function Overview({isPaused}) {
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
       if (data) {
-        setEMGData({emg: JSON.parse(data.emg)});
+        try {
+          setEMGData({emg: JSON.parse(data.emg)});
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        setEMGData(defaultEMGData);
       }
       return;
     } else {
