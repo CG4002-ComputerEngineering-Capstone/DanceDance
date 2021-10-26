@@ -61,9 +61,21 @@ function LineChart({dancerId, GetLatestData}) {
               onRefresh: chart => {
                 var data = GetLatestData(dancerId);
                 if (data) {
-                  chart.data.datasets[0].data.push({x: DateTime.now(), y: parseInt(data.x)});
-                  chart.data.datasets[1].data.push({x: DateTime.now(), y: parseInt(data.y)});
-                  chart.data.datasets[2].data.push({x: DateTime.now(), y: parseInt(data.z)});
+                  try {
+                    chart.data.datasets[0].data.push({x: DateTime.now(), y: parseInt(data.x)});
+                  } catch (err) {
+                    console.log(err);
+                  }
+                  try {
+                    chart.data.datasets[1].data.push({x: DateTime.now(), y: parseInt(data.y)});
+                  } catch (err) {
+                    console.log(err);
+                  }
+                  try {
+                    chart.data.datasets[2].data.push({x: DateTime.now(), y: parseInt(data.z)});
+                  } catch (err) {
+                    console.log(err);
+                  }
                 }
               }
             }
