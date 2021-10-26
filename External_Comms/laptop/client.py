@@ -19,8 +19,8 @@ LOCAL_PORT = 65432
 REMOTE_PORT = 65432
 
 STEP_DIRECTION_MAPPING = {
-    0: 'L',
-    1: 'R'
+    1: 'L',
+    2: 'R'
 }
 
 
