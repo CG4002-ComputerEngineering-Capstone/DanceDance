@@ -227,7 +227,7 @@ class MyDelegate(btle.DefaultDelegate):
                                         self.numIdleAfterPosChange += 1
                                         print(f'Num idle packets after positional change: {self.numIdleAfterPosChange}')
                                         if self.numIdleAfterPosChange > globals_.CONSECUTIVE_IDLE_PACKETS_AFTER_POSITIONAL_CHANGE_THRESHOLD:
-                                            # 
+                                            print(f'Positional change confirmed - adding to queue now')
                                             globals_.dataQueue.put(self.positionalChange)
                                             self.numIdleAfterPosChange = 0
                                             self.assessingPositionalChange = False
