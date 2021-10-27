@@ -21,9 +21,9 @@ class setInterval :
     def cancel(self) :
         self.stopEvent.set()
 
-POST_SYNC_DELAY_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostSyncDelay"
-POST_POSITION_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostPosition" # replace dancerId param when using
-POST_MOVE_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostMove" # replace dancerId param when using
+# POST_SYNC_DELAY_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostSyncDelay"
+# POST_POSITION_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostPosition" # replace dancerId param when using
+# POST_MOVE_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostMove" # replace dancerId param when using
 POST_SENSOR_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostSensor"
 POST_EMG_API_ENDPOINT = "https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/PostEMG"
 
@@ -84,46 +84,19 @@ def mock_data() :
 
 headers = { 'Content-Type': 'application/json' }
 
-predictionCount = 0
-def send_prediction(prediction) :
-  global predictionCount
-  if predictionCount == len(mockPredictions) :
-      predictionCount = 0
-  try:
-    #   requests.post(POST_PREDICTION_API_ENDPOINT, json.dumps(mockPredictions[predictionCount]), headers)
-    #   predictionCount += 1
-      # requests.post(POST_PREDICTION_API_ENDPOINT, json.dumps(prediction), headers)
+# predictionCount = 0
+# def send_prediction(prediction) :
+#   global predictionCount
+#   if predictionCount == len(mockPredictions) :
+#       predictionCount = 0
+#   try:
+#     #   requests.post(POST_PREDICTION_API_ENDPOINT, json.dumps(mockPredictions[predictionCount]), headers)
+#     #   predictionCount += 1
+#       # requests.post(POST_PREDICTION_API_ENDPOINT, json.dumps(prediction), headers)
 
-      print("Sent Prediction")
-  except: 
-      print("lmao fail send")
-
-def send_move(dancerId, move):
-  try:
-      data = {'move': move}
-      requests.post(POST_MOVE_API_ENDPOINT + f'?dancerId={dancerId}', json.dumps(data), headers)
-
-      print(f"Sent Dance move for dancer {dancerId}")
-  except: 
-      print("lmao fail send_move")
-
-def send_position(dancerId, position):
-  try:
-      data = {'position': position}
-      requests.post(POST_POSITION_API_ENDPOINT + f'?dancerId={dancerId}', json.dumps(data), headers)
-
-      print(f"Sent position for dancer {dancerId}")
-  except: 
-      print("lmao fail send_position")
-
-def send_syncdelay(syncDelay):
-  try:
-      data = {'syncDelay': syncDelay}
-      requests.post(POST_SYNC_DELAY_API_ENDPOINT, json.dumps(data), headers)
-
-      print(f"Sent syncdelay")
-  except: 
-      print("lmao fail send_syncdelay")
+#       print("Sent Prediction")
+#   except: 
+#       print("lmao fail send")
     
 # def send_sensor() :
 #     try:
