@@ -168,9 +168,9 @@ void loop() {
       RMS = calculateRMS();
       MAV = calculateMAV();
       ZCR = calculateZCR();
-//      if(confirmed){
-//        //sendemg();
-//      }
+      if(confirmed){
+        sendemg();
+      }
       
       /*
       Serial.print("RMS: ");
