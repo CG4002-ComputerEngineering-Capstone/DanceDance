@@ -9,14 +9,8 @@ function EMG({emg}) {
         <Typography align="center">
           EMG
         </Typography>
-        <Typography align="center" variant="h5">
-          Amp 1: {emg[0]}
-        </Typography>
-        <Typography align="center" variant="h5">
-          Amp 2: {emg[1]}
-        </Typography>
-        <Typography align="center" variant="h5">
-          {emg[2]}mV
+        <Typography align="center" variant="h6">
+          {emg[0]} | {emg[1]} | {emg[2]}mV
         </Typography>
       </CardContent>
     </Card>

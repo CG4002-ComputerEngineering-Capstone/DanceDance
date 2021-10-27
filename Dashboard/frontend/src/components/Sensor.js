@@ -30,14 +30,13 @@ function Sensor({isPaused}) {
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
       if (data) {
-        const formatted = (
-          {
-            accelerometer: data.accelerometer,
-            gyroscope: data.gyroscope
-          }
-        );
-        formatted.accelerometer.forEach(element => sensorData[dancerId - 1].accelerometer.enqueue(element));
-        formatted.gyroscope.forEach(element => sensorData[dancerId - 1].gyroscope.enqueue(element));
+        try {
+          console.log(data);
+          data.accelerometer.forEach(element => sensorData[dancerId - 1].accelerometer.enqueue(element));
+          data.gyroscope.forEach(element => sensorData[dancerId - 1].gyroscope.enqueue(element));
+        } catch (err) {
+          console.log(err);
+        }
       }
       return;
     } else {
