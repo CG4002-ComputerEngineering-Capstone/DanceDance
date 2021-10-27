@@ -9,7 +9,7 @@ function SyncDelay({syncDelay}) {
         <Typography align="center">
           Sync Delay
         </Typography>
-        <Typography align="center" variant="h5">
+        <Typography align="center" variant="h6">
           {syncDelay}ms
         </Typography>
       </CardContent>
