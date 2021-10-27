@@ -117,6 +117,9 @@ class MyDelegate(btle.DefaultDelegate):
         self.timer = None
         self.consecutiveIdlePacketsCount = 0
         self.consecutiveIdlePacketsThreshold = globals_.CONSECUTIVE_IDLE_PACKETS_THRESHOLD
+        self.numIdleAfterPosChange = 0
+        self.assessingPositionalChange = False
+        self.positionalChange = []
 
     def exitDancingState(self):
         print('********************************************************************')
@@ -216,8 +219,23 @@ class MyDelegate(btle.DefaultDelegate):
                                         sensor_values = packet_list[1:4] + packet_list[5:7]
                                         globals_.dataQueue.put([timestamp] + sensor_values)
                                         self.consecutiveIdlePacketsCount = 0
+                                        self.assessingPositionalChange = False
+                                        self.numIdleAfterPosChange = 0
+
+                                    # check if 10 consecutive packets after receiving positional change are idle
+                                    if self.assessingPositionalChange:
+                                        self.numIdleAfterPosChange += 1
+                                        print(f'Num idle packets after positional change: {self.numIdleAfterPosChange}')
+                                        if self.numIdleAfterPosChange > globals_.CONSECUTIVE_IDLE_PACKETS_AFTER_POSITIONAL_CHANGE_THRESHOLD:
+                                            print(f'Positional change confirmed - adding to queue now')
+                                            globals_.dataQueue.put(self.positionalChange)
+                                            self.numIdleAfterPosChange = 0
+                                            self.assessingPositionalChange = False
                                     
                                 elif self.inDancingState == True:
+                                    self.numIdleAfterPosChange = 0
+                                    self.assessingPositionalChange = False
+
                                     # add packet to queue to be sent to server
                                     if packet[7] == 0:
                                         self.consecutiveIdlePacketsCount += 1
@@ -278,7 +296,10 @@ class MyDelegate(btle.DefaultDelegate):
                         if(checksum_direction(packet)):
                             print("Checksum correct for DIR !")
                             # TODO send position change to dashboard and ultra96
-                            globals_.dataQueue.put(packet[1])
+                            # globals_.dataQueue.put([packet[1]])
+                            self.numIdleAfterPosChange = 0
+                            self.assessingPositionalChange = True
+                            self.positionalChange = [packet[1]]
                         # print(packet)
                         # print(Data_Header)
                         # print(newline)

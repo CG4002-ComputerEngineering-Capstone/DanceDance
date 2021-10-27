@@ -8,10 +8,11 @@ import csv
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
-BEETLE_1 = "b0:b1:13:2d:d4:86"
+#BEETLE_1 = "b0:b1:13:2d:d4:86"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
 #BEETLE_0 = "b0:b1:13:2d:b4:19"
 #BEETLE_3 = "b0:b1:13:2d:b4:7d"
+BEETLE_6 = "b0:b1:13:2d:b5:13"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -21,7 +22,7 @@ newline = "\n"
 
  
 csv_time = 0
-address = [BEETLE_1]
+address = [BEETLE_6]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}
@@ -178,6 +179,11 @@ class MyDelegate(btle.DefaultDelegate):
                             #print(newline)
                             #print(time.time() - csv_time)
                             #csv_time = time.time()
+                            if(packet[7] == 0):
+                                print("isDancing = 0")
+                            elif(packet[7] == 1):
+                                print("isDancing == 1")
+
                             if (len(train_data) < 3100):
                                 real_data = packet[1:10]
                                 #print("real data:", real_data)
@@ -191,7 +197,7 @@ class MyDelegate(btle.DefaultDelegate):
                             #print(train_data)
                             print(type(real_data))
                             print(time.time() - csv_time)
-                            with open("jamesbond_matthew_4_.csv", "w", newline="") as f:
+                            with open("test.csv", "w", newline="") as f:
                                 writer = csv.writer(f)
                                 writer.writerows(train_data)
                                             
@@ -215,6 +221,10 @@ class MyDelegate(btle.DefaultDelegate):
                         print("Receiving DIR data from beetle ID: ", i)
                         if(checksum_direction(packet)):
                             print("Checksum correct for DIR !")
+                            if(packet[1] == 1):
+                                print("LEFT")
+                            elif(packet[1] == 2):
+                                print("RIGHT");
                         print(packet)
                         print(Data_Header)
                         print(newline)

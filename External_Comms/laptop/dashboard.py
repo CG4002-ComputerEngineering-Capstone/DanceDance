@@ -161,6 +161,18 @@ def send_sensor(dancerId, sensorData) :
         accelData = []
         gyroData = []
         for sample in sensorData:
+          if len(sample) == 6:
+            accelData.append({
+                "x": sample[1],
+                "y": sample[2],
+                "z": sample[3],
+            })
+            gyroData.append({
+                "x": sample[4],
+                "y": sample[5],
+                # "z": sample[5],
+            })
+          else:
             accelData.append({
                 "x": sample[0],
                 "y": sample[1],
@@ -169,7 +181,7 @@ def send_sensor(dancerId, sensorData) :
             gyroData.append({
                 "x": sample[3],
                 "y": sample[4],
-                "z": sample[5],
+                # "z": sample[5],
             })
         requests.post(POST_SENSOR_API_ENDPOINT + f'?dancerId={dancerId}', json.dumps({"accelerometer": accelData, "gyroscope": gyroData}), headers)
         print(f"\nSent Sensor {dancerId} Data\n")
@@ -182,8 +194,9 @@ def send_emg(emg) :
         data = {'emg': emg}
         requests.post(POST_EMG_API_ENDPOINT, json.dumps(data), headers)
         print("Sent EMG")
-    except:
-        print("Failed to send EMG Data")
+    except Exception as e:
+      print("Failed to send EMG Data")
+      print(e)
 
 # predictionInterval=setInterval(10, send_prediction)
 # sensorInterval=setInterval(1, send_sensor)
