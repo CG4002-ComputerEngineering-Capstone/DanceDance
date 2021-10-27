@@ -285,7 +285,7 @@ class MyDelegate(btle.DefaultDelegate):
                         print("Receiving EMG data from beetle ID: ", i)
                         if(checksum_emg(packet)):
                             # print("Checksum correct for EMG !")
-                            send_emg(data[1:4])
+                            send_emg(packet[1:4])
                         # print(packet)
                         # print(Data_Header)
                         # print(newline)
