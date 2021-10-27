@@ -148,7 +148,7 @@ void loop() {
 
       case 'r':
         confirmed = false;
-        reset();
+        //reset();
     }
   }
   
@@ -220,6 +220,9 @@ void loop() {
   
     roll = 0.96 * gyroAngleX + 0.04 * accAngleX;        //  complimentary filter, accelerometer and gyro angle values are combined to remove noise
     pitch = 0.96 * gyroAngleY + 0.04 * accAngleY;
+
+    Serial.println(roll);
+    Serial.println(pitch);
 
     if((accX > 0.25 || accX < -0.25) && (accY > 1.10 || accY < 0.90)) {   //  detection of start of dance move
      isDancing = 1;
