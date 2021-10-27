@@ -84,13 +84,13 @@ function Overview({isPaused}) {
         spacing={3}
       >
         <Grid item xs={4}>
-          <Dancer dancerNumber={predictionData.position[0]} currentMove={predictionData.move[0]} />
+          <Dancer dancerNumber={predictionData.position[0]} currentMove={predictionData.move[predictionData.position[0] - 1]} />
         </Grid>
         <Grid item xs={4}>
-          <Dancer dancerNumber={predictionData.position[1]} currentMove={predictionData.move[1]} />
+          <Dancer dancerNumber={predictionData.position[1]} currentMove={predictionData.move[predictionData.position[1] - 1]} />
         </Grid>
         <Grid item xs={4}>
-          <Dancer dancerNumber={predictionData.position[2]} currentMove={predictionData.move[2]} />
+          <Dancer dancerNumber={predictionData.position[2]} currentMove={predictionData.move[predictionData.position[2] - 1]} />
         </Grid>
         <Grid item xs={6}>
           <SyncDelay syncDelay={predictionData.syncDelay} />
