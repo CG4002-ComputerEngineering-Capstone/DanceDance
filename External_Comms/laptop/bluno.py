@@ -208,6 +208,7 @@ class MyDelegate(btle.DefaultDelegate):
 
                                 # check if 10 consecutive packets after receiving positional change are idle
                                 if self.assessingPositionalChange:
+                                    print(f'dancingState: {packet[7]}')
                                     self.numPacketsAfterPosChange += 1
                                     if packet[7] == 1:
                                         self.numActiveAfterPosChange += 1
@@ -304,6 +305,7 @@ class MyDelegate(btle.DefaultDelegate):
                             self.numActiveAfterPosChange = 0
                             self.assessingPositionalChange = True
                             self.positionalChange = [packet[1]]
+                            print('Assessing positional change now....')
                         # print(packet)
                         # print(Data_Header)
                         # print(newline)
