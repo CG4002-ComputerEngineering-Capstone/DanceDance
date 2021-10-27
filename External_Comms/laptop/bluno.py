@@ -222,7 +222,7 @@ class MyDelegate(btle.DefaultDelegate):
                                         self.assessingPositionalChange = False
 
 
-                                if self.inDancingState == False:
+                                elif self.inDancingState == False:
                                     if packet[7] == 1:
                                         timestamp = time.time()
                                         self.inDancingState = True
@@ -237,12 +237,8 @@ class MyDelegate(btle.DefaultDelegate):
                                         sensor_values = packet_list[1:4] + packet_list[5:7]
                                         globals_.dataQueue.put([timestamp] + sensor_values)
                                         self.consecutiveIdlePacketsCount = 0
-                                        # self.assessingPositionalChange = False
-                                        self.numActiveAfterPosChange = 0
                                     
                                 elif self.inDancingState == True:
-                                    self.numActiveAfterPosChange = 0
-                                    # self.assessingPositionalChange = False
 
                                     # add packet to queue to be sent to server
                                     if packet[7] == 0:
