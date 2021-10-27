@@ -10,9 +10,9 @@ service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_0 = "b0:b1:13:2d:b3:1a"
 #BEETLE_1 = "b0:b1:13:2d:d4:86"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
-#BEETLE_0 = "b0:b1:13:2d:b4:19"
+BEETLE_0 = "b0:b1:13:2d:b4:19"
 #BEETLE_3 = "b0:b1:13:2d:b4:7d"
-BEETLE_6 = "b0:b1:13:2d:b5:13"
+#BEETLE_6 = "b0:b1:13:2d:b5:13"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -22,7 +22,7 @@ newline = "\n"
 
  
 csv_time = 0
-address = [BEETLE_6]
+address = [BEETLE_0]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}
