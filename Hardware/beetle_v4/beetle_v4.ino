@@ -9,7 +9,8 @@
 #define EMG_DATA 3
 #define DIR_DATA 4
 
-float prevDancingTime = millis();
+int sendDataCounter = 0;
+float prevDancingTime;
 int c = 0;
 const int MPU = 0x68; //  MPU6050 I2C address
 float accX, accY, accZ;  
@@ -37,7 +38,7 @@ float previousIdleTime = 0;
 void (*reset) (void) = 0;
 boolean handshake = false;
 boolean confirmed = false;
-boolean isPositionChangeDone = true;
+boolean isPositionChangeDone = false;
 
 struct Datapacket {
   int8_t type; 
@@ -128,6 +129,8 @@ void setup() {
   }  
 
   previousTimeMPU = millis();
+  prevDancingTime = millis();
+  currentTimeGyro = millis();
 }
 
 void loop() {
@@ -214,35 +217,60 @@ void loop() {
     gyroAngleX = gyroX * elapsedTimeGyro;                   //  deg is calculated by multiplying deg/s by s
     gyroAngleY = gyroY * elapsedTimeGyro;
     yaw = yaw + (gyroZ * elapsedTimeGyro);
-    
+  
     roll = 0.96 * gyroAngleX + 0.04 * accAngleX;        //  complimentary filter, accelerometer and gyro angle values are combined to remove noise
     pitch = 0.96 * gyroAngleY + 0.04 * accAngleY;
 
-
-    Serial.println(pitch);
     if((accX > 0.25 || accX < -0.25) && (accY > 1.10 || accY < 0.90)) {   //  detection of start of dance move
      isDancing = 1;
      dancingCount++;
-     if(dancingCount > 10){
+     if(dancingCount > 25){
       isPositionChangeDone = false;
       dancingCount = 0;
+      prevDancingTime = millis();
+      
      }
      //Serial.println("Hi");
-     prevDancingTime = millis();
+     
+     
     } else {
        isDancing = 0;
        dancingCount = 0;
     }
 
+    // Serial.println(gyroAngleY);
+//     if(pitch > 5){
+//      Serial.println("##############################");
+//     } else if (pitch < -12){
+//      Serial.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//     }
+    //delay(50);
+
+//    if (pitch < -10) {
+//      Serial.println("RIGHT");
+//    }
+
+//    if (pitch > 3) {
+//      Serial.println("LEFT");
+//    }
+    
+    
+    
+   
+
+    //Serial.println(isDancing ? 1 : 0);
+
     if (currentTime > prevDancingTime + 2000 && !isPositionChangeDone) {
-      Serial.println("HI");
-      if(!isDancing && pitch > 3) {
-        Serial.println("LEFT");
+      //Serial.println(gyroAngleY);
+      if(gyroAngleY > 0.7 && confirmed) {
+         //Serial.println("##############################");
+         //Serial.println("LEFT");
         dir = 1;
         senddirection();
         isPositionChangeDone = true;
-      } else if(!isDancing && pitch < -3){
-        Serial.println("RIGHT");
+      } else if(gyroAngleY < -0.4 && confirmed){
+         //Serial.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+         //Serial.println("RIGHT");
         dir = 2;
         senddirection();
         isPositionChangeDone = true;
@@ -250,9 +278,13 @@ void loop() {
      dir = 0;
     }
 
+    
+    sendDataCounter++;
+  
 
-    if(confirmed){
+    if(confirmed && sendDataCounter >= 17){
       sendData();
+      sendDataCounter = 0;
     }             
     
     /*
@@ -379,7 +411,7 @@ void sendData(){
   packet.start_move = int8_t(isDancing);
   packet.checksum = getChecksum(packet);
   Serial.write((uint8_t *)&packet, sizeof(packet));
-  delay(50);
+  //delay(50);
 }
 
 void sendack() {
