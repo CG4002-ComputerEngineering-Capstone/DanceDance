@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 import Container from '@mui/material/Container';
 import Grid from "@mui/material/Grid";
@@ -57,7 +56,7 @@ function Overview({isPaused}) {
   useEffect(() => {
     setTimeout(() => {
       setOpen(false);
-    }, 2500);
+    }, 4000);
   }, [open]);
 
   useEffect(() => {
@@ -76,9 +75,6 @@ function Overview({isPaused}) {
 
   return (
     <Container maxWidth='md'>
-      <Typography align="center" variant="h5" gutterBottom={true}>
-        Overview
-      </Typography>
       <Grid
         container
         spacing={3}
@@ -99,9 +95,12 @@ function Overview({isPaused}) {
           <EMG emg={predictionData.emg} />
         </Grid>
       </Grid>
+
       <Collapse in={open}>
         <div>
-          <Alert severity="info">{flag}</Alert>
+          <Typography align="center" variant="h4">
+              {flag}
+          </Typography>
         </div>
       </Collapse>
     </Container>

@@ -1,8 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { Typography } from "@mui/material";
+import { useCallback, useEffect } from "react";
+
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import { useCallback, useEffect } from "react";
+import Typography from "@mui/material/Typography";
+
 import LineChart from "./LineChart";
 import Queue from "./Queue";
 
@@ -31,7 +33,6 @@ function Sensor({isPaused}) {
       const data = await response.json();
       if (data) {
         try {
-          console.log(data);
           data.accelerometer.forEach(element => sensorData[dancerId - 1].accelerometer.enqueue(element));
           data.gyroscope.forEach(element => sensorData[dancerId - 1].gyroscope.enqueue(element));
         } catch (err) {
@@ -91,6 +92,7 @@ function Sensor({isPaused}) {
           <LineChart dancerId={1} GetLatestData={GetLatestGyroscope} />
         </Grid>
       </Grid>
+
       <Typography align="center" variant="h5" gutterBottom={true}>
         Dancer 2
       </Typography>
@@ -111,6 +113,7 @@ function Sensor({isPaused}) {
           <LineChart dancerId={2} GetLatestData={GetLatestGyroscope} />
         </Grid>
       </Grid>
+      
       <Typography align="center" variant="h5" gutterBottom={true}>
         Dancer 3
       </Typography>
