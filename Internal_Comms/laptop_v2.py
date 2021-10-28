@@ -174,15 +174,15 @@ class MyDelegate(btle.DefaultDelegate):
                         #print("Receiving data from beetle ID: ", i)
                         if(checksum_imu(packet)):
                             #print("Checksum correct!")
-                            #print(packet)
+                            print(packet)
                             #print(Data_Header)
                             #print(newline)
                             #print(time.time() - csv_time)
                             #csv_time = time.time()
-                            if(packet[7] == 0):
-                                print("isDancing = 0")
-                            elif(packet[7] == 1):
-                                print("isDancing == 1")
+                            #if(packet[7] == 0):
+                                #print("isDancing = 0")
+                            #elif(packet[7] == 1):
+                                #print("isDancing == 1")
 
                             if (len(train_data) < 3100):
                                 real_data = packet[1:10]
@@ -197,7 +197,8 @@ class MyDelegate(btle.DefaultDelegate):
                             #print(train_data)
                             print(type(real_data))
                             print(time.time() - csv_time)
-                            with open("test.csv", "w", newline="") as f:
+
+                            with open("mermaid_haritha_5.csv", "w", newline="") as f:
                                 writer = csv.writer(f)
                                 writer.writerows(train_data)
                                             

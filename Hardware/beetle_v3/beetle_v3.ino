@@ -219,7 +219,7 @@ void loop() {
     pitch = 0.96 * gyroAngleY + 0.04 * accAngleY;
 
 
-    Serial.println(pitch);
+    //Serial.println(pitch);
     if((accX > 0.25 || accX < -0.25) && (accY > 1.10 || accY < 0.90)) {   //  detection of start of dance move
      isDancing = 1;
      dancingCount++;
@@ -235,14 +235,14 @@ void loop() {
     }
 
     if (currentTime > prevDancingTime + 2000 && !isPositionChangeDone) {
-      Serial.println("HI");
+      //Serial.println("HI");
       if(!isDancing && pitch > 3) {
-        Serial.println("LEFT");
+        //Serial.println("LEFT");
         dir = 1;
         senddirection();
         isPositionChangeDone = true;
       } else if(!isDancing && pitch < -3){
-        Serial.println("RIGHT");
+        //Serial.println("RIGHT");
         dir = 2;
         senddirection();
         isPositionChangeDone = true;
