@@ -219,6 +219,8 @@ class MyDelegate(btle.DefaultDelegate):
                                         if self.numActiveAfterPosChange < globals_.NUM_ACTIVE_PACKETS_THRESHOLD:
                                             print(f'Positional change confirmed - adding "{self.positionalChange}" to queue now')
                                             globals_.dataQueue.put(self.positionalChange)
+                                        else:
+                                            print(f'Positional change REJECTED - {self.positionalChange}')
                                         self.numActiveAfterPosChange = 0
                                         self.numPacketsAfterPosChange = 0
                                         self.assessingPositionalChange = False
