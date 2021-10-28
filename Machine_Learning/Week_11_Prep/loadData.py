@@ -11,8 +11,8 @@ import glob
 # In[2]:
 
 
-TRAIN_FILEPATH = "../capstone_data/train2/*.csv"
-TEST_FILEPATH = "../capstone_data/test2/*.csv"
+TRAIN_FILEPATH = "../capstone_data/train3/*.csv"
+TEST_FILEPATH = "../capstone_data/test3/*.csv"
 
 SENSOR_COLS = ["ax", "ay", "az", "y", "p", "r", "start_move", "checksum"]
 
