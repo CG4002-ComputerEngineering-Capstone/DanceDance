@@ -21,6 +21,7 @@ function Overview({isPaused}) {
   const [open, setOpen] = useState(false);
 
   async function GetPrediction() {
+    console.log("Prediction update");
     const response = await fetch("https://ap-southeast-1.aws.webhooks.mongodb-realm.com/api/client/v2.0/app/cg4002-nkzcm/service/CG4002/incoming_webhook/GetPrediction");
     if (response.status >= 200 && response.status <= 299) {
       const data = await response.json();
@@ -34,7 +35,6 @@ function Overview({isPaused}) {
               emg: JSON.parse(data.emg)
             }
           );
-          console.log("Prediction update");
           if (data.flag !== "") {
             setFlag(data.flag);
             setOpen(true);

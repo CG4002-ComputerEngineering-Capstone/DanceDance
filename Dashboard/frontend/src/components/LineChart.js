@@ -52,30 +52,18 @@ function LineChart({dancerId, GetLatestData}) {
           x: {
             type: 'realtime',
             realtime: {
-              duration: 8000,
+              duration: 5000,
               refresh: 50,
               delay: 1000,
               pause: false,
-              ttl: undefined,
+              ttl: 8000,
               frameRate: 30,
               onRefresh: chart => {
                 var data = GetLatestData(dancerId);
                 if (data) {
-                  try {
-                    chart.data.datasets[0].data.push({x: DateTime.now(), y: parseInt(data.x)});
-                  } catch (err) {
-                    console.log(err);
-                  }
-                  try {
-                    chart.data.datasets[1].data.push({x: DateTime.now(), y: parseInt(data.y)});
-                  } catch (err) {
-                    console.log(err);
-                  }
-                  try {
-                    chart.data.datasets[2].data.push({x: DateTime.now(), y: parseInt(data.z)});
-                  } catch (err) {
-                    console.log(err);
-                  }
+                  chart.data.datasets[0].data.push({x: DateTime.now(), y: parseInt(data.x)});
+                  chart.data.datasets[1].data.push({x: DateTime.now(), y: parseInt(data.y)});
+                  chart.data.datasets[2].data.push({x: DateTime.now(), y: parseInt(data.z)});
                 }
               }
             }
