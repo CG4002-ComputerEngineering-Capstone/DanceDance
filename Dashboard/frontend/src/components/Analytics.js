@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Container, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { Add, Delete, Insights } from "@mui/icons-material";
 import AnalyticsDialog from "./AnalyticsDialog";
 
@@ -121,9 +121,6 @@ function Analytics() {
 
   return (
     <Container>
-      <Typography align="center" variant="h5" gutterBottom={true}>
-        Analytics
-      </Typography>
       <input type="file" onChange={handleFileChange} />
       <AnalyticsDialog CloseDialog={CloseDialog} data={data} open={open} />
       <TableContainer component={Paper}>

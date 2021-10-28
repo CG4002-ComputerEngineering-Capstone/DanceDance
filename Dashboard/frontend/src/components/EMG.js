@@ -7,10 +7,10 @@ function EMG({emg}) {
     <Card sx={{ minWidth: 200 }}>
       <CardContent>
         <Typography align="center">
-          EMG
+          EMG (rms | mav | zcr)
         </Typography>
         <Typography align="center" variant="h6">
-          {emg[0]} | {emg[1]} | {emg[2]}mV
+          {emg[0]} | {emg[1]} | {emg[2]}
         </Typography>
       </CardContent>
     </Card>

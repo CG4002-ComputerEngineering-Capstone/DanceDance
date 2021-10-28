@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { Link } from "react-router-dom";
+
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -9,11 +12,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Analytics from '@mui/icons-material/Analytics';
 import PeopleIcon from '@mui/icons-material/People';
 import PersonIcon from '@mui/icons-material/Person';
-import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
 function NavigationMenu() {
+  const [selectedIndex, setSelectedIndex] = useState(1);
+
+  const handleListItemClick = (event, index) => {
+    setSelectedIndex(index);
+  }
+
   return (
     <Drawer
       variant="permanent"
@@ -24,26 +32,41 @@ function NavigationMenu() {
       }}
     >
       <Toolbar />
-      <Box sx={{ display: 'flex' }}>
-        <List>
-          <ListItem >
-            <ListItemButton component={Link} to={"/Overview"}>
+      <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <List component="nav">
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={selectedIndex === 0}
+              onClick={(event) => handleListItemClick(event, 0)}
+              component={Link}
+              to={"/Overview"}
+            >
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
               <ListItemText primary={"Overview"} />
             </ListItemButton>
           </ListItem>
-          <ListItem>
-            <ListItemButton component={Link} to={"/Sensor"}>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={selectedIndex === 1}
+              onClick={(event) => handleListItemClick(event, 1)}
+              component={Link}
+              to={"/Sensor"}
+            >
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
               <ListItemText primary={"Sensor"} />
             </ListItemButton>
           </ListItem>
-          <ListItem>
-            <ListItemButton component={Link} to={"/Analytics"}>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={selectedIndex === 2}
+              onClick={(event) => handleListItemClick(event, 2)}
+              component={Link}
+              to={"/Analytics"}
+            >
               <ListItemIcon>
                 <Analytics />
               </ListItemIcon>
