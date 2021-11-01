@@ -48,9 +48,9 @@
 `scan on`
 4. Exit bluetoothctl
 `exit`
-5. Make change to main.py: lines _ and _ by replacing with your beetle's mac address
+5. Make change to main.py: **line 17** by replacing with your beetle's mac address. You may have to commment/uncomment mac addresses above line 17 to match your beetle's address
 `vim main.py`
-7. Do the same for bluno.py: lines _ and _
+7. Do the same for bluno.py: **line 18**. You may have to commment/uncomment mac addresses above line 18 to match your beetle's address
 `vim bluno.py`
 9. Run main.py script with dancerId = 1  
 `python3 main.py 1`
