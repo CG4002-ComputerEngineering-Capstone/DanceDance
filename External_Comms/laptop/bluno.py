@@ -14,8 +14,8 @@ service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 #BEETLE_1 = "b0:b1:13:2d:b4:7d"
 #BEETLE_2 = "b0:b1:13:2d:d7:97"
 #BEETLE_4 = "b0:b1:13:2d:b4:19"
-#BEETLE_5 = "b0:b1:13:2d:b5:13"
-BEETLE_6 = "b0:b1:13:2d:d4:86"
+BEETLE_5 = "b0:b1:13:2d:b5:13"
+#BEETLE_6 = "b0:b1:13:2d:d4:86"
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -25,7 +25,7 @@ newline = "\n"
 
  
 csv_time = 0
-address = [BEETLE_6]
+address = [BEETLE_5]
 global_delegate = []
 [global_delegate.append(0) for idx in range(len(address))]
 address_map = {}
@@ -424,6 +424,7 @@ class main_thread(threading.Thread):
 
     def handshake(self):
         self.serial_char.write(bytes("r", "utf-8"), withResponse = False)
+        sleep(1)
         print(Connect_Header)
         print("Attempting handshake with Beetle ID ", self.ID)
         handshake_start = time.time()
@@ -443,7 +444,7 @@ class main_thread(threading.Thread):
 
 
     def reconnect(self):
-        sleep(5)
+        sleep(1)
         print(newline)
         print(Reconnect_Header)
         print("Trying reconnection wih Beetle ID: ", self.ID)
@@ -451,7 +452,7 @@ class main_thread(threading.Thread):
         print(newline)
         try:
             self.beetle.connect(self.beetle.addr)
-            sleep(5)
+            sleep(1)
             print("Reconnection successful with Beetle ID: ", self.ID)
             print(Reconnect_Header)
             print(newline)

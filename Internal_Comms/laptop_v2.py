@@ -198,7 +198,7 @@ class MyDelegate(btle.DefaultDelegate):
                             print(type(real_data))
                             print(time.time() - csv_time)
 
-                            with open("jamesbond_nishanth_10.csv", "w", newline="") as f:
+                            with open("test.csv", "w", newline="") as f:
                                 writer = csv.writer(f)
                                 writer.writerows(train_data)
                                             
@@ -225,7 +225,7 @@ class MyDelegate(btle.DefaultDelegate):
                             if(packet[1] == 1):
                                 print("LEFT")
                             elif(packet[1] == 2):
-                                print("RIGHT");
+                                print("RIGHT")
                         print(packet)
                         print(Data_Header)
                         print(newline)
@@ -343,6 +343,7 @@ class main_thread(threading.Thread):
 
     def handshake(self):
         self.serial_char.write(bytes("r", "utf-8"), withResponse = False)
+        sleep(1)
         print(Connect_Header)
         print("Attempting handshake with Beetle ID ", self.ID)
         handshake_start = time.time()
@@ -362,7 +363,7 @@ class main_thread(threading.Thread):
 
 
     def reconnect(self):
-        sleep(5)
+        sleep(1)
         print(newline)
         print(Reconnect_Header)
         print("Trying reconnection wih Beetle ID: ", self.ID)
@@ -370,7 +371,7 @@ class main_thread(threading.Thread):
         print(newline)
         try:
             self.beetle.connect(self.beetle.addr)
-            sleep(5)
+            sleep(1)
             print("Reconnection successful with Beetle ID: ", self.ID)
             print(Reconnect_Header)
             print(newline)
