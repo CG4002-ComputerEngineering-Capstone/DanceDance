@@ -7,11 +7,10 @@ import time
 import csv
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
-#BEETLE_0 = "b0:b1:13:2d:b3:1a"
-#BEETLE_1 = "b0:b1:13:2d:d4:86"
-#BEETLE_2 = "b0:b1:13:2d:d7:97"
+
+
 BEETLE_0 = "b0:b1:13:2d:b4:19"
-#BEETLE_3 = "b0:b1:13:2d:b4:7d"
+#BEETLE_1 = "b0:b1:13:2d:d4:86"
 #BEETLE_6 = "b0:b1:13:2d:b5:13"
 
 #>>>>>>>>>>Setup Data collection>>>>>>>>
@@ -225,18 +224,6 @@ class Setup:
             print("error forming peripheral")
             return 1
         return beetle
-        
-    def scan():
-        count = 0
-        print("Scanning for devices...")
-        scanner = btle.Scanner(0)
-        devices = scanner.scan(5)
-        for device in devices:
-            if device.addr in address:
-                count += 1
-        print("Found beetles: ", count)
-        return devices
-
 
 class main_thread(threading.Thread):
     def __init__(self, beetle, ID):
@@ -304,7 +291,6 @@ class main_thread(threading.Thread):
         sleep(1)
         print(Connect_Header)
         print("Attempting handshake with Beetle ID ", self.ID)
-        handshake_start = time.time()
         self.serial_char.write(bytes("h", "utf-8"), withResponse = False)
         print("Handshake packet sent to Beetle ID ", self.ID)
         print(Connect_Header)
@@ -312,7 +298,6 @@ class main_thread(threading.Thread):
         
         #three-way handshake
         if self.beetle.waitForNotifications(2.0):
-            handshake_end = time.time()
             if (handshake_map[self.beetle.addr]):
                 self.serial_char.write(bytes("a", "utf-8"), withResponse = False)
 
@@ -336,7 +321,6 @@ class main_thread(threading.Thread):
             print(Disconnect_Header)
             print("Error! Trying to reconnect with Beetle ID: ", self.ID)
             self.reconnect()
-
 
 
 if __name__ == '__main__':
