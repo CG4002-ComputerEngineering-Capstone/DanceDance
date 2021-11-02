@@ -9,13 +9,13 @@ import csv
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 
 
-#BEETLE_0 = "b0:b1:13:2d:b4:19"
-BEETLE_1 = "b0:b1:13:2d:d4:86"
+BEETLE_0 = "b0:b1:13:2d:b4:19"
+# BEETLE_1 = "b0:b1:13:2d:d4:86"
 #BEETLE_6 = "b0:b1:13:2d:b5:13"
 
 #>>>>>>>>>>Setup Data collection>>>>>>>>
-address = [BEETLE_1]
-csv_file_name = "logout2_nishanth_5.csv"
+address = [BEETLE_0]
+csv_file_name = "logout2_priyan_5.csv"
 
 csv_time = 0
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
