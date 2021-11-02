@@ -9,12 +9,12 @@ import bluno
 import globals_
 
 
-BEETLE_4 = "b0:b1:13:2d:b4:19"
-#BEETLE_5 = "b0:b1:13:2d:b5:13"
+#BEETLE_4 = "b0:b1:13:2d:b4:19"
+BEETLE_5 = "b0:b1:13:2d:b5:13"
 #BEETLE_6 = "b0:b1:13:2d:d4:86"
 
 #>>>>> SETUP BLUNO MAC ADDRESS >>>>>>>>
-address = [BEETLE_4]
+address = [BEETLE_5]
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"

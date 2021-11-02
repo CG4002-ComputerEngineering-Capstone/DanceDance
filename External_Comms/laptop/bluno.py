@@ -10,12 +10,12 @@ from dashboard import send_emg
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 
-BEETLE_4 = "b0:b1:13:2d:b4:19"
-#BEETLE_5 = "b0:b1:13:2d:b5:13"
+#BEETLE_4 = "b0:b1:13:2d:b4:19"
+BEETLE_5 = "b0:b1:13:2d:b5:13"
 #BEETLE_6 = "b0:b1:13:2d:d4:86"
 
 #>>>>> SETUP BLUNO MAC ADDRESS >>>>>>>>
-address = [BEETLE_4]
+address = [BEETLE_5]
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
