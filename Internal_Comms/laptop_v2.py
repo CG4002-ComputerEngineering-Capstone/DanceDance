@@ -15,7 +15,7 @@ BEETLE_1 = "b0:b1:13:2d:d4:86"
 
 #>>>>>>>>>>Setup Data collection>>>>>>>>
 address = [BEETLE_1]
-csv_file_name = "window360_nishanth_5.csv"
+csv_file_name = "logout2_nishanth_5.csv"
 
 csv_time = 0
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
