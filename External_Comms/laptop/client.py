@@ -31,8 +31,8 @@ class LaptopClient(threading.Thread):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clock_offset = 0
         self.clientConnectedFlag = clientConnectedFlag
-        self.clockSyncFlag = threading.Event()
         self.sendMsgLock = threading.Lock()
+        self.shutdown = threading.Event()
         # self.clock_offset_history = []
 
     def send_message(self, message):
@@ -71,51 +71,54 @@ class LaptopClient(threading.Thread):
         self.send_message(self.dancerId)
 
     def clock_sync(self):
-        while True:
+        print(f'[clock sync thread] Acquiring sendMsgLock...')
+        self.sendMsgLock.acquire()
+        print(f'[clock sync thread] Acquired sendMsgLock!')
+
+        self.send_message('sync')
+        offsets_array = []
+        for i in range(globals_.NUM_CLOCK_SYNC_ITERATIONS):
+            data = self.receive_message()
+            if data != 'ready':
+                print('Clock sync ready packet wrong')
+                sys.exit()
+
+            print(f'Clock sync iteration #{i+1}')
+            t0 = time.time()
+            self.send_message('syncpacket')
+
+            data = self.receive_message()
+            print(data)
+            t3 = time.time()
+
+            t1, t2 = map(float, data.split('|'))
+            print(f't0: {t0}\nt1: {t1}\nt2: {t2}\nt3: {t3}')
+
+            rtt = (t1 - t0) - (t2 - t3)
+            print(f'RTT #{i+1}: {rtt}')
+            offset = t0 - t1 - (rtt/2)
+            print(f'Offset #{i+1}: {offset}\n')
+
+            offsets_array.append(offset)
+            self.send_message('end')
+
+        self.clock_offset = sum(offsets_array) / len(offsets_array)
+        # self.clock_offset_history.append(sum(offsets_array) / len(offsets_array))
+        print(f'Average Clock Offset: {self.clock_offset}')
+        print(f'[clock sync thread] Releasing sendMsgLock...')
+        self.sendMsgLock.release()
+        print(f'[clock sync thread] Released sendMsgLock!')
+
+
+    def handle_server(self):
+        while not self.shutdown.is_set():
             # wait for command from server to begin clock_sync
             command = self.receive_message()
-            if command != 'sync':
-                print('Clock sync error - packet received is not "sync"')
-                sys.exit()
-            self.clockSyncFlag.set()
-
-            print(f'[clock sync thread] Acquiring sendMsgLock...')
-            self.sendMsgLock.acquire()
-            print(f'[clock sync thread] Acquired sendMsgLock!')
-
-            self.send_message('sync')
-            offsets_array = []
-            for i in range(globals_.NUM_CLOCK_SYNC_ITERATIONS):
-                data = self.receive_message()
-                if data != 'ready':
-                    print('Clock sync ready packet wrong')
-                    sys.exit()
-
-                print(f'Clock sync iteration #{i+1}')
-                t0 = time.time()
-                self.send_message('syncpacket')
-
-                data = self.receive_message()
-                print(data)
-                t3 = time.time()
-
-                t1, t2 = map(float, data.split('|'))
-                print(f't0: {t0}\nt1: {t1}\nt2: {t2}\nt3: {t3}')
-
-                rtt = (t1 - t0) - (t2 - t3)
-                print(f'RTT #{i+1}: {rtt}')
-                offset = t0 - t1 - (rtt/2)
-                print(f'Offset #{i+1}: {offset}\n')
-
-                offsets_array.append(offset)
-                self.send_message('end')
-
-            self.clock_offset = sum(offsets_array) / len(offsets_array)
-            # self.clock_offset_history.append(sum(offsets_array) / len(offsets_array))
-            print(f'Average Clock Offset: {self.clock_offset}')
-            print(f'[clock sync thread] Releasing sendMsgLock...')
-            self.sendMsgLock.release()
-            print(f'[clock sync thread] Released sendMsgLock!')
+            if command == 'logout':
+                self.shutdown.set()
+            elif command == 'sync':
+                self.clock_sync()
+                
 
     def run(self):
         self.setup_connection()
@@ -127,15 +130,15 @@ class LaptopClient(threading.Thread):
             return
         # self.send_message('sync')
         # self.clock_sync()
-        clock_sync_thread = threading.Thread(target=self.clock_sync)
-        clock_sync_thread.start()
+        handle_server_thread = threading.Thread(target=self.handle_server)
+        handle_server_thread.start()
         # time.sleep(1)
-        while 1:
+        while not self.shutdown.is_set():
         # for i in range(14):
             # receive data indicating server is ready
             sample = []
             timestamp = None
-            while len(sample) < globals_.PACKET_WINDOW_SIZE:
+            while not self.shutdown.is_set() and len(sample) < globals_.PACKET_WINDOW_SIZE:
                 data = globals_.dataQueue.get()
                 # print(f'data from bluno: {data}')
                 # print(type(data))
@@ -170,6 +173,9 @@ class LaptopClient(threading.Thread):
                     sample.append(data)
                     print(f'Sample length: {len(sample)}')
 
+            if self.shutdown.is_set():
+                break
+
             print(f'enough sample length: {sample}')
                         
             # send sensor readings to dashboard
@@ -181,6 +187,8 @@ class LaptopClient(threading.Thread):
             print(f'vector shape: {vector.shape}')
             
             for v in vector:
+                if self.shutdown.is_set():
+                    break
                 v = list(v)
                 if timestamp is not None:
                     v.insert(0, timestamp)
