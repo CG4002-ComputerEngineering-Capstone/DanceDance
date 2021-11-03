@@ -14,9 +14,9 @@ from scipy import stats
 
 
 FREQ = 20 
-WINDOW = 4
-SEGMENT_SIZE = FREQ * WINDOW
-OVERLAP = 60
+WINDOW = 3.0
+SEGMENT_SIZE = int(FREQ * WINDOW)
+OVERLAP = 50
 
 SENSOR_COLS = ["ax", "ay", "az", "p", "r"]
 MAX_VALUE = 32768 # 32768
@@ -46,7 +46,7 @@ def normalise(arr):
 
 def segmentation(df): 
     global SEGMENT_SIZE, OVERLAP, SENSOR_COLS, FREQ, WINDOW, TARGET_COL
-    ncols = FREQ * WINDOW * len(SENSOR_COLS)
+    ncols = int(FREQ * WINDOW) * len(SENSOR_COLS)
     segments = []
     labels = []
     # In each iteration, the row jumps by the overlap size

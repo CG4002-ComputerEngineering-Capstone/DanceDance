@@ -19,7 +19,7 @@ SENSOR_COLS = ["ax", "ay", "az", "y", "p", "r", "start_move", "checksum"]
 
 DANCE_TO_NUM_MAP = {'dab': 0, 'jamesbond': 1, 'mermaid': 2, 
                     'scarecrow': 3, 'pushback': 4, 'cowboy': 5, 
-                    'window360': 6, 'snake': 7, 'logout': 8, 'logout2': 9}
+                    'window360': 6, 'snake': 7, 'logout2': 8}
 
 
 # In[3]:
