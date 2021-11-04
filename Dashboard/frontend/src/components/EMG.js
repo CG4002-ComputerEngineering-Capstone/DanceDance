@@ -6,7 +6,7 @@ function EMG({emg}) {
   return (
     <Card sx={{ minWidth: 200 }}>
       <CardContent>
-        <Typography align="center">
+        <Typography align="center" variant="h5">
           EMG (rms | mav | zcr)
         </Typography>
         <Typography align="center" variant="h6">

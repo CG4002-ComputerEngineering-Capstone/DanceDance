@@ -6,13 +6,14 @@ import Typography from "@mui/material/Typography";
 
 import Dancer from "./Dancer";
 import EMG from "./EMG";
+import Fatigue from "./Fatigue";
 import SyncDelay from "./SyncDelay";
 
 const defaultPredictionData = {
   move: ["-", "-", "-"],
   position: [1, 2, 3],
   syncDelay: 0,
-  emg: [0, 0, 0]
+  emg: [0, 0, 50]
 }
 
 function Overview({isPaused}) {
@@ -88,10 +89,13 @@ function Overview({isPaused}) {
         <Grid item xs={4}>
           <Dancer dancerNumber={predictionData.position[2]} currentMove={predictionData.move[predictionData.position[2] - 1]} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <SyncDelay syncDelay={predictionData.syncDelay} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
+          <Fatigue emg={predictionData.emg} />
+        </Grid>
+        <Grid item xs={4}>
           <EMG emg={predictionData.emg} />
         </Grid>
       </Grid>

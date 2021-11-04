@@ -2,19 +2,19 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography'
 
-function SyncDelay({syncDelay}) {
+function Fatigue({emg}) {
   return (
     <Card sx={{ minWidth: 200 }}>
       <CardContent>
         <Typography align="center" variant="h5">
-          Sync Delay
+          Estimated Fatigue
         </Typography>
         <Typography align="center" variant="h6">
-          {syncDelay}ms
+          {(50 - emg[2]) * 2}%
         </Typography>
       </CardContent>
     </Card>
   )
 }
 
-export default SyncDelay;
+export default Fatigue;
