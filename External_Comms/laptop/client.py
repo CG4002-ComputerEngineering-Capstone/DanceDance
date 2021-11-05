@@ -11,7 +11,8 @@ from dashboard import send_sensor
 # from sigpri import append, resetCumData
 # from liveFeatures import append, resetCumData
 # from liveProcess import append, resetCumData
-from elevenLive import append, resetCumData
+# from elevenLive import append, resetCumData
+from finaleLive import append, resetCumData
 
 
 LOCAL_PORTS = [65432, 65431, 65430]
@@ -103,7 +104,7 @@ class LaptopClient(threading.Thread):
             self.send_message('end')
 
         self.clock_offset = sum(offsets_array) / len(offsets_array)
-        # self.clock_offset_history.append(sum(offsets_array) / len(offsets_array))
+
         print(f'Average Clock Offset: {self.clock_offset}')
         print(f'[clock sync thread] Releasing sendMsgLock...')
         self.sendMsgLock.release()
@@ -126,15 +127,14 @@ class LaptopClient(threading.Thread):
         command = self.receive_message()
         print('received message:', command)
         if command != 'server_ready':
-            print('did not rececive "server_ready" from server, exiting..')
+            print('did not receive "server_ready" from server, exiting..')
             return
         # self.send_message('sync')
         # self.clock_sync()
         handle_server_thread = threading.Thread(target=self.handle_server)
         handle_server_thread.start()
-        # time.sleep(1)
+
         while not self.shutdown.is_set():
-        # for i in range(14):
             # receive data indicating server is ready
             sample = []
             timestamp = None
@@ -144,25 +144,27 @@ class LaptopClient(threading.Thread):
                 # print(type(data))
                 
                 if len(data) == 1:
-                    # positional change packet
-                    step_direction = STEP_DIRECTION_MAPPING[data[0]]
+                    if data[0] == globals_.BLUNO_LAPTOP_DISCONNECTED or data[0] == globals_.BLUNO_LAPTOP_CONNECTED:
+                        # bluno-laptop connections and disconnections
+                        message_to_send = data[0]
+                    else:
+                        # positional change packet
+                        message_to_send = STEP_DIRECTION_MAPPING[data[0]]
                     print(f'[main client thread] Acquiring sendMsgLock...')
                     self.sendMsgLock.acquire()
-                    print(f'[main client thread] Acquired sendMsgLock! sending step_direction "{step_direction}"')
+                    print(f'[main client thread] Acquired sendMsgLock! sending "{message_to_send}"')
 
-                    self.send_message(step_direction)
+                    self.send_message(message_to_send)
 
                     print(f'[main client thread] Releasing sendMsgLock...')
                     self.sendMsgLock.release()
                     print(f'[main client thread] Released sendMsgLock!')
+                    
                 elif len(data) == 6: 
                     # If data is the packet containing timestamp of start of dance move i.e. timestamp + 6 sensor values, call resetCumData, clear sample and append to sample
                     resetCumData()
                     sample = []
                     print(f'RESET SAMPLE - sample length: {len(sample)}')
-                    print(type(time.time()))
-                    print(data[0])
-                    print(data[1])
 
                     timestamp = float(data[0]) - self.clock_offset
                     print(f'timestamp: {timestamp}')

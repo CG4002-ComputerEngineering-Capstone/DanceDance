@@ -171,6 +171,7 @@ class MyDelegate(btle.DefaultDelegate):
                             print(packet)
                             print(Connect_Header)
                             print(newline)
+                            globals_.dataQueue.put([globals_.BLUNO_LAPTOP_CONNECTED])
 
                     elif packet_type == 2 and handshake_map[addr] == True:
                         packet = struct.unpack("<bhhhihhbi", packet)
@@ -315,6 +316,7 @@ class main_thread(threading.Thread):
                             print("Disconnected with - Beetle ID: ", self.ID)
                             print(Disconnect_Header)
                             handshake_map[self.beetle.addr] = False
+                            globals_.dataQueue.put([globals_.BLUNO_LAPTOP_DISCONNECTED])
                             self.beetle.disconnect()
                             self.reconnect()
 
@@ -337,6 +339,7 @@ class main_thread(threading.Thread):
             print(Disconnect_Header)
             print(newline)
             handshake_map[self.beetle.addr] = False
+            globals_.dataQueue.put([globals_.BLUNO_LAPTOP_DISCONNECTED])
             self.beetle.disconnect()
             self.reconnect()
 
