@@ -14,7 +14,7 @@ function NavigationBar({isPaused, TogglePaused}) {
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}>
       <Toolbar>
         <Typography variant="h5" style={{ flex: 1 }}>
-          CG4002 Team 12
+          DanceDance Team 12
         </Typography>
         <Button
           variant="contained"

@@ -7,10 +7,16 @@ function EMG({emg}) {
     <Card sx={{ minWidth: 200 }}>
       <CardContent>
         <Typography align="center" variant="h5">
-          EMG (rms | mav | zcr)
+          EMG Data
         </Typography>
-        <Typography align="center" variant="h6">
-          {emg[0]} | {emg[1]} | {emg[2]}
+        <Typography align="center">
+          Root mean square: {emg[0]}
+        </Typography>
+        <Typography align="center">
+          Mean absolute value: {emg[1]}
+        </Typography>
+        <Typography align="center">
+          Zero-crossing rate: {emg[2]}
         </Typography>
       </CardContent>
     </Card>

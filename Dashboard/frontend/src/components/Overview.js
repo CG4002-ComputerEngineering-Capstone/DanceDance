@@ -89,13 +89,13 @@ function Overview({isPaused}) {
         <Grid item xs={4}>
           <Dancer dancerNumber={predictionData.position[2]} currentMove={predictionData.move[predictionData.position[2] - 1]} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <SyncDelay syncDelay={predictionData.syncDelay} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <Fatigue emg={predictionData.emg} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12}>
           <EMG emg={predictionData.emg} />
         </Grid>
       </Grid>

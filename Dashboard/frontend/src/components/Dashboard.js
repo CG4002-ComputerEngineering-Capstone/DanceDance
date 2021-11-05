@@ -31,7 +31,6 @@ function Dashboard() {
           isPaused={isPaused}
           TogglePaused={TogglePaused}
         />
-        <NavigationMenu />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
           <Switch>
@@ -41,6 +40,7 @@ function Dashboard() {
             <Route path="/Analytics" render={() => <Analytics />} />
           </Switch>
         </Box>
+        <NavigationMenu />
       </Router>
     </Box>
   )
