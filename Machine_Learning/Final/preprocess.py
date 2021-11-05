@@ -14,9 +14,9 @@ from scipy import stats
 
 
 FREQ = 20 
-WINDOW = 3.0
+WINDOW = 2.1
 SEGMENT_SIZE = int(FREQ * WINDOW)
-OVERLAP = 50
+OVERLAP = 30
 
 SENSOR_COLS = ["ax", "ay", "az", "p", "r"]
 MAX_VALUE = 32768 # 32768
