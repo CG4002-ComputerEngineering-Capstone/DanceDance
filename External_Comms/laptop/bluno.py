@@ -10,12 +10,12 @@ from dashboard import send_emg
 
 service_uuid = "0000dfb0-0000-1000-8000-00805f9b34fb"
 
-#BEETLE_4 = "b0:b1:13:2d:b4:19"
-BEETLE_5 = "b0:b1:13:2d:b5:13"
+BEETLE_4 = "b0:b1:13:2d:b4:19"
+# BEETLE_5 = "b0:b1:13:2d:b5:13"
 #BEETLE_6 = "b0:b1:13:2d:d4:86"
 
 #>>>>> SETUP BLUNO MAC ADDRESS >>>>>>>>
-address = [BEETLE_5]
+address = [BEETLE_4]
 
 Connect_Header = "++++++++++++++++++++++++++++++++++++++++++++++++++++"
 Disconnect_Header = "----------------------------------------------------"
@@ -178,7 +178,7 @@ class MyDelegate(btle.DefaultDelegate):
                         global csv_time
                         if(checksum_imu(packet)):
                             try:
-                                print(f'isDancingState: {self.inDancingState}')
+                                #print(f'isDancingState: {self.inDancingState}')
 
                                 # check if 10 consecutive packets after receiving positional change are idle
                                 if self.assessingPositionalChange:

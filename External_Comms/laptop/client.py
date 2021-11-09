@@ -169,16 +169,16 @@ class LaptopClient(threading.Thread):
                     timestamp = float(data[0]) - self.clock_offset
                     print(f'timestamp: {timestamp}')
                     sample.append(data[1:])
-                    print(f'Sample length: {len(sample)}')
+                    # print(f'Sample length: {len(sample)}')
                 else:
                     # normal IMU sensor data packet
                     sample.append(data)
-                    print(f'Sample length: {len(sample)}')
+                    # print(f'Sample length: {len(sample)}')
 
             if self.shutdown.is_set():
                 break
 
-            print(f'enough sample length: {sample}')
+            # print(f'enough sample length: {sample}')
                         
             # send sensor readings to dashboard
             print('send_sensor to dashboard')
@@ -186,7 +186,7 @@ class LaptopClient(threading.Thread):
 
             # preprocess data before sending to ultra96
             vector = append(sample)
-            print(f'vector shape: {vector.shape}')
+            # print(f'vector shape: {vector.shape}')
             
             for v in vector:
                 if self.shutdown.is_set():
@@ -195,16 +195,16 @@ class LaptopClient(threading.Thread):
                 if timestamp is not None:
                     v.insert(0, timestamp)
                     timestamp = None
-                print(f'Length of vector to send: {len(v)}')
+                # print(f'Length of vector to send: {len(v)}')
                 vector_string = ','.join(list(map(str, v)))
                 
-                print(f'[main client thread] Acquiring sendMsgLock...')
+                # print(f'[main client thread] Acquiring sendMsgLock...')
                 self.sendMsgLock.acquire()
-                print(f'[main client thread] Acquired sendMsgLock!')
+                # print(f'[main client thread] Acquired sendMsgLock!')
                 self.send_message(vector_string)
-                print(f'[main client thread] Releasing sendMsgLock...')
+                # print(f'[main client thread] Releasing sendMsgLock...')
                 self.sendMsgLock.release()
-                print(f'[main client thread] Released sendMsgLock!')
+                # print(f'[main client thread] Released sendMsgLock!')
                 time.sleep(0.1)
 
             # ========== FOR TESTING ============
