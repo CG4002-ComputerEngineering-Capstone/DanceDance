@@ -17,9 +17,9 @@ import pandas as pd
 from Crypto.Cipher import AES
 
 # Week 13 test: 8 moves, so 33 in total = (8*4) + 1 (logout)
-#ACTIONS = ['mermaid', 'jamesbond', 'dab', 'window360', 'cowboy', 'scarecrow', 'pushback', 'snake']
+ACTIONS = ['mermaid', 'jamesbond', 'dab', 'window360', 'cowboy', 'scarecrow', 'pushback', 'snake']
 # Week 9 and 11 tests: 3 moves, repeated 4 times each = 12 moves.
-ACTIONS = ['mermaid', 'jamesbond', 'dab']
+# ACTIONS = ['mermaid', 'jamesbond', 'dab']
 POSITIONS = ['1 2 3', '3 2 1', '2 3 1', '3 1 2', '1 3 2', '2 1 3']
 LOG_DIR = os.path.join(os.path.dirname(__file__), 'evaluation_logs')
 NUM_MOVE_PER_ACTION = 4
@@ -115,9 +115,9 @@ class Server(threading.Thread):
                         self.write_move_to_logger(
                             decrypted_message['position'], decrypted_message['action'], decrypted_message['sync'])
 
-                        print("{} :: {} :: {}".format(decrypted_message['position'],
-                                                      decrypted_message['action'],
-                                                      decrypted_message['sync']))
+                        # print("{} :: {} :: {}".format(decrypted_message['position'],
+                        #                               decrypted_message['action'],
+                        #                               decrypted_message['sync']))
                         self.send_dancer_positions()
                         self.set_next_action()  # Get new action
                 except Exception as e:
@@ -128,7 +128,7 @@ class Server(threading.Thread):
 
     def send_dancer_positions(self):
         dancer_positions = self.dancer_positions
-        print('New Dancer Positions: {0}'.format(dancer_positions))
+        # print('New Dancer Positions: {0}'.format(dancer_positions))
 
         # Return without any encryption
         self.connection.sendall(str(dancer_positions).encode())
@@ -240,13 +240,19 @@ def main():
     while my_server.idx <= my_server.n_moves + 1 and not my_server.shutdown.is_set():  # Display new task
         if my_server.idx == my_server.n_moves + 1 and my_server.week_9:
             # action_display.config(text=str(my_server.idx) + ":" + 'finished!')
-            print('===========================================')
+            print('==============')
             print(str(my_server.idx) + ":" + 'finished!')
-            print('===========================================')
+            print('==============')
             my_server.stop()
         elif my_server.idx == my_server.n_moves + 1 and not my_server.week_9:
             # action_display.config(text=str(my_server.idx) + ":" + 'logout')
             # position_display.config(text=' '.join(my_server.dancer_positions))
+            if curr_index != my_server.idx:
+                print('==============')
+                print(str(my_server.idx) + ":" + 'logout')
+                print(' '.join(my_server.dancer_positions))
+                print('==============')
+                curr_index = my_server.idx
             if my_server.logout is True:
                 break
         else:
@@ -254,10 +260,10 @@ def main():
             #     text=str(my_server.idx) + ":" + str(my_server.action))
             # position_display.config(text=' '.join(my_server.dancer_positions))
             if curr_index != my_server.idx:
-                print('===========================================')
+                print('==============')
                 print(str(my_server.idx) + ":" + str(my_server.action))
                 print(' '.join(my_server.dancer_positions))
-                print('===========================================')
+                print('==============')
                 curr_index = my_server.idx
         # display_window.update()
         time.sleep(0.2)
