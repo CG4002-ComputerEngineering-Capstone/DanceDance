@@ -34,7 +34,6 @@ class LaptopClient(threading.Thread):
         self.clientConnectedFlag = clientConnectedFlag
         self.sendMsgLock = threading.Lock()
         self.shutdown = threading.Event()
-        # self.clock_offset_history = []
 
     def send_message(self, message):
         bytes_message = base64.b64encode(str.encode(str(message)))
@@ -129,8 +128,7 @@ class LaptopClient(threading.Thread):
         if command != 'server_ready':
             print('did not receive "server_ready" from server, exiting..')
             return
-        # self.send_message('sync')
-        # self.clock_sync()
+        
         handle_server_thread = threading.Thread(target=self.handle_server)
         handle_server_thread.start()
 
@@ -207,22 +205,7 @@ class LaptopClient(threading.Thread):
                 # print(f'[main client thread] Released sendMsgLock!')
                 time.sleep(0.1)
 
-            # ========== FOR TESTING ============
-            # test_vector = [float(int(self.dancerId)) for x in range(200)]
-            # # if start of dance move
-            # if timestamp is not None:
-            #     test_vector.insert(0, timestamp)
-            
-            # print(f'Length of vector to send: {len(test_vector)}')
-            
-            # test = ','.join(list(map(str, test_vector)))
-
-            # self.sendMsgLock.acquire()
-            # self.send_message(test)
-            # self.sendMsgLock.release()
-            # ========== FOR TESTING ============
         
-        # print(f'End of testing, clock offset history: {self.clock_offset_history}')
         self.close()
 
     def close(self):

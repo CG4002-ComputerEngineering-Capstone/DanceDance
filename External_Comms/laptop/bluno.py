@@ -106,7 +106,6 @@ class MyDelegate(btle.DefaultDelegate):
         btle.DefaultDelegate.__init__(self)
         self.address = params
         self.inDancingState = False
-        # self.immediatePrevDancingState = False # dancing state right before timer event happen
         self.timer = None
         self.consecutiveIdlePacketsCount = 0
         self.consecutiveIdlePacketsThreshold = globals_.CONSECUTIVE_IDLE_PACKETS_THRESHOLD
@@ -114,12 +113,7 @@ class MyDelegate(btle.DefaultDelegate):
         self.numPacketsAfterPosChange = 0
         self.assessingPositionalChange = False
         self.positionalChange = []
-
-    def exitDancingState(self):
-        print('********************************************************************')
-        print(f'End of dancing state')
-        print('********************************************************************')
-        self.inDancingState = False
+        
 
     def handleNotification(self, cHandle, data):
         for i in range(len(address)):
@@ -203,10 +197,6 @@ class MyDelegate(btle.DefaultDelegate):
                                     if packet[7] == 1:
                                         timestamp = time.time()
                                         self.inDancingState = True
-                                        # self.timer = threading.Timer(4.2, self.exitDancingState)
-                                        # self.timer.start()
-                                        # if not self.immediatePrevDancingState == True:
-                                            # means after 2 seconds the dancer is still dancing
                                         print('********************************************************************')
                                         print(f'Start of dance move')
                                         print('********************************************************************')

@@ -41,17 +41,6 @@ if __name__ == '__main__':
 
     clientConnectedFlag.wait()
     print('Clients connected, waiting for bluetooth')
-    # time.sleep(20)
-
-    # for i in range(10):
-    #     for j in range(140):
-    #         if j == 0:
-    #             dummy_data = [time.time()] + [int(dancerId) for x in range(6)]
-    #         else:
-    #             dummy_data = [int(dancerId) for x in range(6)]
-
-    #         globals_.dataQueue.put(dummy_data)
-    #         time.sleep(0.05)
     
     for addr in address:
         count = 0
