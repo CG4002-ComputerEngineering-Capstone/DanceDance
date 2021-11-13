@@ -20,7 +20,7 @@ def send_move(dancerId, move):
 
       print(f"Sent Dance move for dancer {dancerId}")
   except Exception as e: 
-      print("lmao fail send_move")
+      print("fail send_move")
       print(e)
 
 
@@ -31,7 +31,7 @@ def send_position(position):
 
       print(f"Sent positions to dashboard")
   except Exception as e: 
-      print("lmao fail send_position")
+      print("fail send_position")
       print(e)
 
 
@@ -43,7 +43,7 @@ def send_syncdelay(syncDelay):
 
       print(f"Sent syncdelay")
   except Exception as e: 
-      print("lmao fail send_syncdelay")
+      print("fail send_syncdelay")
       print(e)
     
 def send_alert(alert):
