@@ -13,5 +13,5 @@ The `Final` folder contains the codebase used to implement a Multi Layer Percept
 | `capstone_data` | Data collected from team for various dance moves. Naming convention : `<subjectName_danceMove_trialNum.csv>` |
 | `Week_9_Prep` | Codebase for Week 9 evaluation |
 | `Week_11_Prep` | Codebase for Week 11 evaluation |
-
+| `Exploratory Weeks` | Codebase detailing the exploration of various ML models based on `UCI HAR` dataset. Includes Week7 Individual Submission|
 
