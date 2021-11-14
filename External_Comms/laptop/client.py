@@ -8,10 +8,6 @@ import base64
 
 import globals_
 from dashboard import send_sensor
-# from sigpri import append, resetCumData
-# from liveFeatures import append, resetCumData
-# from liveProcess import append, resetCumData
-# from elevenLive import append, resetCumData
 from finaleLive import append, resetCumData
 
 
