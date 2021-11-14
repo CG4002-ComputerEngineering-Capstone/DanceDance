@@ -1,39 +1,17 @@
 # MACHINE LEARNING # 
 
-## Discrete Stochastic Signal Analysis
+The `Final` folder contains the codebase used to implement a Multi Layer Perceptron model, capable of classifying different dance moves based on real-time sensor readings from accelerometer and gyroscope. This was used during the Week 13 evaluation of CG4002 Capstone Project. 
 
-#### Theory
-- Time series data: y = f(t)
-- Signal is more general. The independent variable can be t, spatial coordinates, frequency, etc.
-    - For e.g. a picture can be seen as a signal which contains information about the brightness of three colors (RGB) across two spatial dimensions.
-- Nyquist rate = 2 * highest frequency present in the signal
-- A signal is said to be under-sampled if the sampling rate is smaller than the Nyquist rate. 
-- Human activity frequencies are between 0 and 20 Hz, and 98% of the FFT amplitude is contained below 10 Hz.
-
-> Any signal can be decomposed into a sum of its simpler signals. These simpler signals are trigonometric functions (sine and cosine waves). 
-
-FFT = time-domain to frequency-domain. 
-
-## Signal processing pipeline 
-> Meaurements are done at a constant rate of `20Hz`. After normalisation and filtering out of noise, useful features are extracted from the axial signals. 
-
-### FFT
-
-#### If t_signal is an acceleration signal: 
-- t_DC_component is the gravity component [Grav_acc]
-- t_body_component is the body's acceleration component [Body_acc]
-
-#### If t_signal is a gyro signal:  
-- t_DC_component is not useful [noise]
-- t_body_component is the body's angular velocity component [Body_gyro]
-
-#### f_signals: 
-- DC_component: f_signal values having freq between  `[-0.3 hz to 0 hz]`  and from  `[0 hz to 0.3hz]`
-- body_component: f_signal values having freq between  `[-10 hz to -0.3 hz)`  and from  `(0.3 hz to 10 hz] `
+| FileName | Description |
+| --- | --- |
+| `Final/finaleLive.py` | Live data handler script used to preprocess and generate input vector to be passed into the neural network for prediction |
+| `Final/loadData.py` | Loads data from `capstone_data` folder to generate training and test dataframes |
+| `Final/preprocess.py` | Pre-processing script to generate input vector for the nn model from training and test dataframes |
+| `Final/utility.py` | Helper functions for visualisation |
+|`Final/nn_trainer.ipynb`| MLP trainer, used to train, validate, test and evaluate the model |
+|`Final/mlp.csv`| Saved MLP weights which were passed for Hardware acceleration on the Ultra96 |
+| `capstone_data` | Data collected from team for various dance moves. Naming convention : `<subjectName_danceMove_trialNum.csv>` |
+| `Week_9_Prep` | Codebase for Week 9 evaluation |
+| `Week_11_Prep` | Codebase for Week 11 evaluation |
 
 
-### Segmentation 
-
-> The signals are segmented in fixed-width sliding windows of `2 sec` with an overlap of `50%`. Therefore, each window will have `20 x 2 = 40 samples` in total.
-
-> Each window corresponds to an input vector row. Just by looking at 3-axial acc and 3-axial gyro readings for each sample point in a window, there would be `6 * 40 = 240 cols` in an input vector row. This vector can then be fed into the Multi-Layer Perceptron model for prediction. 
