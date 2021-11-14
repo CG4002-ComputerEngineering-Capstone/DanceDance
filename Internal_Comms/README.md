@@ -2,8 +2,8 @@
 
 ### Final working versions for the project ###
 
-1. beetle_basic.ino is the intial version in the earlier stages of the project. Final working version after integration with hardware is under Hardware > beetle_v5 > beetle_v5.ino
-2. laptop_v2.py is used for data collection and is purely internal comms code. Final working version of code after integration with external comms are under External_Comms > laptop > bluno.py, main.py
+1. beetle_basic.ino is the initial code version in the earlier stages of the project. Final working version after integration with hardware is under Hardware > beetle_v5 > beetle_v5.ino
+2. laptop_v2.py is used for data collection and is purely internal comms code. Final working version after integration with external comms are under External_Comms > laptop > bluno.py, main.py
 
 
 ### For data collection ####
