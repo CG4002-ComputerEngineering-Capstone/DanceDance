@@ -1,7 +1,7 @@
 #include "Wire.h"
 
 #define MPU_SAMPLING_RATE 20       // 20Hz
-#define MYOWARE_SAMPLING_RATE 100  // 500Hz
+#define MYOWARE_SAMPLING_RATE 100  // 100Hz
 
 #define HANDSHAKE 'h'
 #define ACK 1
@@ -179,7 +179,7 @@ void loop() {
     j++;
   }
 
-  if(1) { //(currentTime - previousTimeMPU) > (1000 / MPU_SAMPLING_RATE)
+  if(1) { 
     Wire.beginTransmission(MPU);
     Wire.write(0x3B); //  accelerometer data, first address 3B
     Wire.endTransmission();

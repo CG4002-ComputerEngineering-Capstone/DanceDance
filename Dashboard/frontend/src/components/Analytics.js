@@ -45,7 +45,6 @@ function Analytics() {
     } catch (err) {
       console.log(err)
     }
-
   }
 
   const GetCurrentEntry = () => {
@@ -94,11 +93,13 @@ function Analytics() {
   }
 
   const AddEntry = () => {
+    var newPredictedMoves = [];
+    entry.predictedMove.forEach(element => newPredictedMoves.push(element));
     const newData = {
       id: new Date().getTime(),
       move: entry.move,
       position: entry.position,
-      predictedMove: entry.predictedMove,
+      predictedMove: newPredictedMoves,
       predictedPosition: entry.predictedPosition
     }
     setData(data => [...data, newData])
@@ -108,7 +109,6 @@ function Analytics() {
     if (data.length > 0) {
       setOpen(true);
     }
-
   }
 
   const CloseDialog = () => {

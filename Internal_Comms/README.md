@@ -1,15 +1,22 @@
 # Internal Communications # 
 
+### Final working versions for the project ###
+
+1. beetle_basic.ino is the intial version in the earlier stages of the project. Final working version after integration with hardware is under Hardware > beetle_v5 > beetle_v5.ino
+2. laptop_v2.py is used for data collection and is purely internal comms code. Final working version of code after integration with external comms are under External_Comms > laptop > bluno.py, main.py
+
+
 ### For data collection ####
 
 1. Make sure you are in the correct directory `cd Internal_Comms`
 2. Type `bluetoothctl` first
 3. Type `scan on` to find out your bluno's mac address
-4. Type `exit`to exit bluetoothctl mode
+4. Type `exit` to exit bluetoothctl mode
 5. In laptop_v2.py file, edit **line 17** to include your bluno's mac address and **line 18** to rename your file in the correct format. You might have to comment/uncomment out other mac addresses above line 17
-6. Once you see *"Successfully received ACK packet from Beetle ID: 0"*, **start** dancing 
-7. **Stop** dancing when you see *"Reached CSV"* with the time taken to collect readings
-8. `ls` to check if the csv file has been added correctly
+6. Run the file by typing `python3 laptop_v2.py` into the terminal
+7. Once you see *"Successfully received ACK packet from Beetle ID: 0"*, **start** dancing 
+8. **Stop** dancing when you see *"Reached CSV"* with the time taken to collect readings
+9. `ls` to check if the csv file has been added correctly
 
 
 ### Debug bluetooth issues ###
