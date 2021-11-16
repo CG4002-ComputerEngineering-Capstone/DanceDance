@@ -9,3 +9,13 @@ with high accuracy and low latency. The system also detects the relative positio
 Overall, this system acts as a dance coach for its users, providing real-time feedback through an interactive dashboard. 
 
 
+| Name | Role |
+| --- | --- |
+| Chan Hong Yi, Matthew | Hardware Sensors |
+| Nishanth Elango | Hardware FPGA |
+| Divakaran Haritha | Internal Communications |
+| Lim Hao Xiang, Sean | External Communications|
+| Priyan Rajamohan | Machine Learning |
+| Lim Chek Jun | Dashboard |
+
+The detailed report of the CG4002 Engineering Capstone Project is available [here](https://github.com/CG4002-ComputerEngineering-Capstone/DanceDance/blob/main/Report/Final%20Capstone%20Report%20-%20Group%2012.pdf)
