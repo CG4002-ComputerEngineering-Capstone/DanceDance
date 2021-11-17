@@ -8,6 +8,7 @@ Each dancer is equipped with a pair of wearable devices containing a Beetle BLE 
 with high accuracy and low latency. The system also detects the relative position of the dancers, and the synchronization delay between the fastest and slowest dancer, which are displayed on a dashboard together with the predicted dance move. 
 Overall, this system acts as a dance coach for its users, providing real-time feedback through an interactive dashboard. 
 
+<img width="1031" alt="Screenshot 2021-11-17 at 3 49 33 PM" src="https://user-images.githubusercontent.com/42378151/142158019-9c5e3e12-b5ed-448e-82dc-67d0693fb9fa.png">
 
 | Name | Role |
 | --- | --- |
